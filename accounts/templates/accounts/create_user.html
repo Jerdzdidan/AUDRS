@@ -1,0 +1,171 @@
+{% extends "home/layout.html" %}
+{% block title %}Create User{% endblock title %}
+
+{% block style %}
+<style>
+    .form-control, .form-select {
+        width: 100% !important;
+    }
+</style>
+{% endblock style %}
+
+{% block body %}
+<article class="content-section border-secondary-subtle rounded p-3 shadow-lg">
+    <h2 class="mb-4 border-bottom pb-2">Create User</h2>
+    <form method="post" class="needs-validation" novalidate>
+        {% csrf_token %}
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="username" name="username" required placeholder="Username" autocomplete="off">
+                    <label for="username">Username</label>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-floating mb-3">
+                    <input type="email" class="form-control" id="email" name="email" required placeholder="Email" autocomplete="off">
+                    <label for="email">Email</label>
+                </div>
+            </div>
+        </div>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="first_name" name="first_name" required placeholder="First Name" autocomplete="off">
+                    <label for="first_name">First Name</label>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="last_name" name="last_name" required placeholder="Last Name" autocomplete="off">
+                    <label for="last_name">Last Name</label>
+                </div>
+            </div>
+        </div>
+        <div class="row g-3">
+            <div class="col-12">
+                <div class="form-floating mb-3">
+                    <input type="password" class="form-control" id="password" name="password" required placeholder="Password" autocomplete="off">
+                    <label for="password">Password</label>
+                </div>
+            </div>
+        </div>
+        <div class="row g-3">
+            {% if request.user.role|lower == "officer" %}
+                <input type="hidden" name="role" value="student">
+            {% elif request.user.is_superuser %}
+                <div class="col-12">
+                    <div class="form-floating mb-3">
+                        <select class="form-select" id="role" name="role" aria-label="Select role">
+                            {% for role in roles %}
+                                <option value="{{ role }}">{{ role|title }}</option>
+                            {% endfor %}
+                        </select>
+                        <label for="role">Role</label>
+                    </div>
+                </div>
+            {% else %}
+                <div class="col-12">
+                    <div class="form-floating mb-3">
+                        <select class="form-select" id="role" name="role" aria-label="Select role">
+                            {% for role in roles %}
+                                {% if role|lower != "admin" %}
+                                    <option value="{{ role }}">{{ role|title }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                        <label for="role">Role</label>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        <div id="studentFields" class="row g-3 {% if request.user.role|lower == "officer" %}mt-1{% endif %}">
+            <div class="col-md-4">
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="student_id" name="student_id" placeholder="Student ID" autocomplete="off">
+                    <label for="student_id">Student ID</label>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-floating mb-3">
+                    <select class="form-select" id="year_level" name="year_level" required>
+                        <option value="" selected disabled>Select Year Level</option>
+                        <option value="1">1st Yr.</option>
+                        <option value="2">2nd Yr.</option>
+                        <option value="3">3rd Yr.</option>
+                        <option value="4">4th Yr.</option>
+                    </select>
+                    <label for="year_level">Year Level</label>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-floating mb-3">
+                    <select class="form-select" id="program" name="program" required>
+                        <option value="" selected disabled>Select program</option>
+                        {% for prog in programs %}
+                            <option value="{{ prog.id }}">{{ prog.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="program">Program</label>
+                </div>
+            </div>
+        </div>
+        {% if request.user.role|lower != "officer" %}
+            <div id="departmentRow" class="row g-3">
+                <div class="col-12">
+                    <div class="form-floating mb-3">
+                        <select class="form-select" id="department" name="department" required onchange="this.form.submit()">
+                            <option value="" disabled>Select department</option>
+                            {% for dept in departments %}
+                                <option value="{{ dept.id }}" {% if selected_department and dept.id == selected_department.id %}selected{% endif %}>{{ dept.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <label for="department">Department</label>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <input type="hidden" name="department" value="{{ fixed_department.id }}">
+        {% endif %}
+        <div class="mt-4 d-flex justify-content-end gap-2">
+            <button type="submit" class="btn myPrimary text-white">
+                Create User
+            </button>
+            <a href="{% url 'home' %}" class="btn btn-outline-secondary">
+                Cancel
+            </a>
+        </div>
+    </form>
+</article>
+{% endblock body %}
+
+{% block script %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Toggle display of student fields based on role selection.
+    const roleSelect = document.getElementById('role');
+    const studentFields = document.getElementById('studentFields');
+    const departmentRow = document.getElementById('departmentRow');
+    
+    function toggleFields() {
+        if (!roleSelect) return;
+        const selected = roleSelect.value.toLowerCase();
+        if (selected === 'student') {
+            studentFields.style.display = 'flex';
+        } else {
+            studentFields.style.display = 'none';
+        }
+        if (selected === 'admin') {
+            if(departmentRow) departmentRow.style.display = 'none';
+        } else {
+            if(departmentRow) departmentRow.style.display = 'flex';
+        }
+    }
+    
+    if (roleSelect) {
+        roleSelect.addEventListener('change', toggleFields);
+        toggleFields();
+    }
+});
+</script>
+{% endblock script %}

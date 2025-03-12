@@ -1,0 +1,165 @@
+{% extends "home/layout.html" %}
+{% block title %}Update User{% endblock title %}
+
+{% block style %}
+<style>
+    .form-control, .form-select {
+        width: 100% !important;
+    }
+    /* Read-only fields styling */
+    .readonly-field {
+        background-color: #e9ecef !important;
+    }
+</style>
+{% endblock style %}
+
+{% block body %}
+<article class="content-section border-secondary-subtle rounded p-3 shadow-lg">
+    <h2 class="mb-4 border-bottom pb-2">Update User</h2>
+    <form method="post" class="needs-validation" novalidate>
+        {% csrf_token %}
+        <!-- Row 1: Username and Email -->
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control readonly-field" id="username" name="username" value="{{ user_obj.username }}" readonly placeholder="Username">
+                    <label for="username">Username</label>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-floating mb-3">
+                    <input type="email" class="form-control" id="email" name="email" value="{{ user_obj.email }}" required placeholder="Email">
+                    <label for="email">Email</label>
+                </div>
+            </div>
+        </div>
+        <!-- Row 2: First Name and Last Name (read-only) -->
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control readonly-field" id="first_name" name="first_name" value="{{ user_obj.first_name }}" readonly placeholder="First Name">
+                    <label for="first_name">First Name</label>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control readonly-field" id="last_name" name="last_name" value="{{ user_obj.last_name }}" readonly placeholder="Last Name">
+                    <label for="last_name">Last Name</label>
+                </div>
+            </div>
+        </div>
+        <!-- Row 3: Password (leave blank if unchanged) -->
+        <div class="row g-3">
+            <div class="col-12">
+                <div class="form-floating mb-3">
+                    <input type="password" class="form-control" id="password" name="password" placeholder="Password" autocomplete="off">
+                    <label for="password">Password (leave blank if unchanged)</label>
+                </div>
+            </div>
+        </div>
+        <!-- Row 4: Role Selection (display only if user is not a student) -->
+        {% if user_obj.role != "STUDENT" %}
+            {% if request.user.role|lower == "officer" %}
+                <input type="hidden" name="role" value="{{ user_obj.role }}">
+            {% elif request.user.is_superuser %}
+                <div class="row g-3">
+                    <div class="col-12">
+                        <div class="form-floating mb-3">
+                            <select class="form-select" id="role" name="role" aria-label="Select role">
+                                {% for role in roles %}
+                                    <option value="{{ role }}" {% if user_obj.role == role %}selected{% endif %}>{{ role|title }}</option>
+                                {% endfor %}
+                            </select>
+                            <label for="role">Role</label>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="row g-3">
+                    <div class="col-12">
+                        <input type="hidden" name="role" value="{{ user_obj.role }}">
+                        <div class="form-floating mb-3">
+                            <select class="form-select" id="role" disabled aria-label="Select role">
+                                {% for role in roles %}
+                                    {% if role|lower != "admin" %}
+                                        <option value="{{ role }}" {% if user_obj.role == role %}selected{% endif %}>{{ role|title }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                            <label for="role">Role</label>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endif %}
+        <!-- Row 5: Student Fields (only if user being edited is a student) -->
+        {% if user_obj.role == "STUDENT" %}
+            <div id="studentFields" class="row g-3">
+                <!-- Student ID (editable only if updater is admin/superuser) -->
+                <div class="col-md-4">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control {% if request.user.role|lower == "officer" %}readonly-field{% endif %}" id="student_id" name="student_id" value="{{ profile.student_id }}" 
+                        {% if request.user.role|lower == "officer" %}readonly{% endif %} placeholder="Student ID">
+                        <label for="student_id">Student ID</label>
+                    </div>
+                </div>
+                <!-- Year Level -->
+                <div class="col-md-4">
+                    <div class="form-floating mb-3">
+                        <select class="form-select" id="year_level" name="year_level" required>
+                            <option value="" disabled>Select Year Level</option>
+                            <option value="1" {% if profile.year_level == 1 %}selected{% endif %}>1st Yr.</option>
+                            <option value="2" {% if profile.year_level == 2 %}selected{% endif %}>2nd Yr.</option>
+                            <option value="3" {% if profile.year_level == 3 %}selected{% endif %}>3rd Yr.</option>
+                            <option value="4" {% if profile.year_level == 4 %}selected{% endif %}>4th Yr.</option>
+                        </select>
+                        <label for="year_level">Year Level</label>
+                    </div>
+                </div>
+                <!-- Program Dropdown -->
+                <div class="col-md-4">
+                    <div class="form-floating mb-3">
+                        <select class="form-select" id="program" name="program" required>
+                            <option value="" disabled>Select program</option>
+                            {% for prog in programs %}
+                                <option value="{{ prog.id }}" {% if profile.program and profile.program.id == prog.id %}selected{% endif %}>{{ prog.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <label for="program">Program</label>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        <!-- Row 6: Department Selection (display only if user is not a student) -->
+        {% if user_obj.role not in "[STUDENT,ADMIN]" %}
+            <div id="departmentRow" class="row g-3">
+                <div class="col-12">
+                    <div class="form-floating mb-3">
+                        {% if request.user.role|lower == "officer" %}
+                            <input type="text" class="form-control readonly-field" value="{{ profile.department.name }}" readonly>
+                            <input type="hidden" name="department" value="{{ profile.department.id }}">
+                        {% else %}
+                            <select class="form-select" id="department" name="department" required>
+                                <option value="" disabled>Select department</option>
+                                {% for dept in departments %}
+                                    <option value="{{ dept.id }}" {% if profile and dept.id == profile.department.id %}selected{% endif %}>{{ dept.name }}</option>
+                                {% endfor %}
+                            </select>
+                        {% endif %}
+                        <label for="department">Department</label>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        <!-- Submit Buttons: Bottom right -->
+        <div class="mt-4 d-flex justify-content-end gap-2">
+            <button type="submit" class="btn myPrimary text-white">
+                <i class="bi bi-person-plus me-2"></i>Update User
+            </button>
+            <a href="{% url 'student-list' %}" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-2"></i>Cancel
+            </a>
+        </div>
+    </form>
+</article>
+{% endblock body %}

@@ -1,0 +1,126 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page - AU Technical Support Management System</title>
+
+    <link rel="stylesheet" href="{% static 'accounts/login.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="icon" href="{% static 'home/images/Arellano_University_New_Logo.png' %}" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.css">
+
+    
+</head>
+
+<body>
+
+    <!-- ALERTS -->
+    {% if messages %}
+    <div class="modal fade" id="messageModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                {% for message in messages %}
+                <div class="modal-header">
+                    <h5 class="modal-title {% if message.tags == "error" %}text-danger{% else %}text-{{ message.tags }}{% endif %}">
+                        {% if message.tags == "error" %}
+                            ERROR
+                        {% else %}
+                            INFO
+                        {% endif %}
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                        <p class="{{ message.tags }}">{{ message }}</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="mybody mycontainer fade-in">
+        <!-- Carousel -->
+        <div id="carouselExampleAutoplaying" class="hero-carousel carousel slide mycr carousel-fade" data-bs-ride="carousel"
+            data-bs-interval="2400" data-bs-touch="false" data-bs-pause="false">
+            <div class="carousel-inner">
+            <div class="carousel-item active c-item">
+                <img src="{% static "accounts/carousel/au-main_1.jpg" %}" class="d-block w-100 c-image" alt="...">
+                <div class="overlay"></div>
+            </div>
+            <div class="carousel-item c-item">
+                <img src="{% static "accounts/carousel/au-pasay-mabini.jpg" %}" class="d-block w-100 c-image" alt="...">
+                <div class="overlay"></div>
+            </div>
+            <div class="carousel-item c-item">
+                <img src="{% static "accounts/carousel/au-pasig.jpg" %}" class="d-block w-100 c-image" alt="...">
+                <div class="overlay"></div>
+            </div>
+            <div class="carousel-item c-item">
+                <img src="{% static "accounts/carousel/au-pasay-abad.jpg" %}" class="d-block w-100 c-image" alt="...">
+                <div class="overlay"></div>
+            </div>
+            <div class="carousel-item c-item">
+                <img src="{% static "accounts/carousel/au-plaridel-1.jpg" %}" class="d-block w-100 c-image" alt="...">
+                <div class="overlay"></div>
+            </div>
+            <div class="carousel-item c-item">
+                <img src="{% static "accounts/carousel/au-malabon-rizal.jpg" %}" class="d-block w-100 c-image" alt="...">
+                <div class="overlay"></div>
+            </div>
+            <div class="carousel-item c-item">
+                <img src="{% static "accounts/carousel/au-malabon-elisa.jpg" %}" class="d-block w-100 c-image" alt="...">
+                <div class="overlay"></div>
+            </div>
+            </div>
+            <div class="content-overlay">
+                <div class="card p-4" style="max-width: 460px;">
+                    <div class="container text-center mt-3">
+                        <img src="{% static 'home/images/Arellano_University_New_Logo.png' %} " class="img-fluid" alt="Responsive image" style="max-width: 100px; height: auto;">
+                        <h1 class="fw-bold" style="color: #004EA8; font-size: calc(1rem + 1vw);">
+                            ARELLANO UNIVERSITY
+                        </h1>
+                        <h2 class="fw-bold" style="color: #004EA8; font-size: calc(0.5rem + 1vw);">
+                            DIGITAL REGISTRATION SYSTEM
+                        </h2>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" autocomplete="off">
+                            {% csrf_token %}
+                            <div class="mb-3 text-start">
+                                <label class="form-label fw-bold mb-1" style="font-size: calc(0.5rem + 0.5vw);">Username:</label>
+                                <input type="text" name="username" class="form-control border border-dark-subtle" style="box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.23);" placeholder="Enter username">
+                            </div>
+                            <div class="mb-3 text-start">
+                                <label class="form-label fw-bold mb-1" style="font-size: calc(0.5rem + 0.5vw);">Password:</label>
+                                <input type="password" name="password" class="form-control border border-dark-subtle" style="box-shadow: 3px 3px 0px rgba(0, 0, 0, 0.23);" placeholder="Enter password">
+                            </div>
+                            <div class="d-grid">
+                                <input type="submit" value="Login" class="btn btn-warning fw-bold py-2 border-dark-subtle" style="font-size: calc(0.5rem + 0.5vw);">
+                            </div>
+                        </form>         
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            {% if messages %}
+                $('#messageModal').modal('show');
+            {% endif %}
+        });
+    </script>
+</body>
+
+</html>

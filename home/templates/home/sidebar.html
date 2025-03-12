@@ -1,0 +1,71 @@
+{% load static %}
+<div id="sidebar" class="sidebar">
+    <div class="p-3" style="position: relative;">
+        <button id="sidebarClose" class="btn btn-outline-secondary m-0" style="position: absolute!important; top: 15px!important; right: 10px!important;">
+        <i class="ri-close-line"></i>
+        </button>
+        <div class="sidebar-logo p-3 text-center">
+        <a href="#" class="nav-link">
+            <img src="{% static "home/images/Arellano_University_New_Logo.png" %}" alt="Logo" class="img-fluid logo-small">
+            <h3 class="">Arellano University</h3>
+            <small class="text-muted fw-semibold">DIGITAL REGISTRATION SYSTEM</small>
+        </a>
+        </div>
+        <ul class="list-group my-1">
+        <a href="{% url "home" %}" class="nav-link active rounded">
+            <li class="list-group-item d-flex align-items-center menu-item">
+            <i class="ri-home-9-fill me-1 menu-icons"></i>Home
+            </li>
+        </a>
+        </ul>
+        <ul class="list-group my-1">
+            <a href="#" class="nav-link rounded">
+            <li class="list-group-item d-flex align-items-center menu-item">
+                <i class="ri-dashboard-fill me-1 menu-icons"></i>Dashboard
+            </li>
+            </a>
+        </ul>
+        {% if request.user.role in "[SUPERUSER,ADMIN]" %}
+        <ul class="list-group my-1">
+            <a class="nav-link rounded accounts-nav-toggle {% if '/accounts/' in request.path %}active{% endif %}" href="#" id="accountsToggle">
+            <li class="list-group-item d-flex align-items-center menu-item">
+                <i class="ri-account-box-2-fill me-1 menu-icons"></i>
+                <span>Accounts-Management</span>
+                <i class="ri-arrow-down-s-line ms-auto"></i>
+            </li>
+            </a>
+            <div class="collapse {% if '/accounts/' in request.path %}show{% endif %}" id="accountsDropdown">
+                <a href="{% url "student-list" %}" class="nav-link rounded accounts-nav-item {% if '/student-list/' in request.path %}active{% endif %}">
+                    <li class="list-group-item d-flex align-items-center menu-item">
+                    <i class="fa-solid fa-user-graduate me-1 menu-icons"></i>
+                        Student Accounts
+                    </li>
+                </a>
+                {% if request.user.role in "[SUPERUSER,ADMIN]" %}
+                <a href="{% url "officer-list" %}" class="nav-link rounded accounts-nav-item {% if '/officer-list/' in request.path %}active{% endif %}">
+                    <li class="list-group-item d-flex align-items-center menu-item">
+                        <i class="ri-graduation-cap-fill me-1 menu-icons"></i>
+                        Officers Accounts
+                    </li>
+                </a>
+                {% endif %}
+                {% if request.user.role in "[SUPERUSER]" %}
+                    <a href="{% url "admin-list" %}" class="nav-link rounded accounts-nav-item {% if '/admin-list/' in request.path %}active{% endif %}">
+                        <li class="list-group-item d-flex align-items-center menu-item">
+                            <i class="ri-user-star-fill me-1 menu-icons"></i>
+                            Admins Accounts
+                        </li>
+                    </a>
+                {% endif %}
+                <a href="{% url "create-user" %}" class="nav-link rounded accounts-nav-item {% if '/create-user/' in request.path %}active{% endif %}">
+                    <li class="list-group-item d-flex align-items-center menu-item">
+                        <i class="ri-user-add-fill me-1 menu-icons"></i>
+                        Create Account
+                    </li>
+                </a>
+            </div>
+        </ul>
+        {% endif %}
+
+    </div>
+</div>

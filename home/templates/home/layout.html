@@ -1,0 +1,141 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+    <title>AUDRS</title>
+
+  <link rel="icon" href="{% static 'home/images/Arellano_University_New_Logo.png' %}" type="image/x-icon">
+  <link rel="stylesheet" type="text/css" href="{% static 'home/main.css' %}">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  
+  {% comment %} RemixIcon {% endcomment %}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.css">
+
+  {% comment %} FontAwesome {% endcomment %}
+  <script src="https://kit.fontawesome.com/c5804bd254.js" crossorigin="anonymous"></script>
+
+  {% comment %} DataTables.Net {% endcomment %}
+  <link rel="stylesheet" href="//cdn.datatables.net/2.2.2/css/dataTables.dataTables.min.css">
+
+  {% comment %} Flatpickr {% endcomment %}
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+  {% comment %} Fonts {% endcomment %}
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round">
+
+  {% comment %} Calendar {% endcomment %}
+  <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
+  <script src='https://cdn.jsdelivr.net/npm/fullcalendar/daygrid@6.1.15/index.global.min.js'></script>
+
+  {% block extrahead %}{% endblock %}
+
+  {% block style %}{% endblock %}
+</head>
+<body>
+    <div class="full-nav-bg"></div>
+
+    <div id="page-wrapper" class="d-flex" style="min-height: 100vh;">
+        <!-- Sidebar -->
+        {% include "home/sidebar.html" %}
+
+        {% include "home/deletePopUp.html" %}
+
+        <!-- Content Wrapper (Header + Main Content) -->
+        <div id="content-wrapper" class="flex-grow-1">
+            {% comment %} <header class="site-header">
+                <nav class="navbar navbar-expand-md navbar-dark bg-steel">
+                <div class="container">
+                    <!-- Sidebar Toggle Button -->
+                    <div class="navbar-nav align-items-xl-center">
+                    <button id="sidebarToggle" class="btn btn-outline-light me-3 my-auto">
+                        <i class="ri-menu-2-line"></i>
+                    </button>
+                    </div>
+                    <div class="ms-2 me-auto">
+                    <h5 class="d-flex align-items-end gap-1 mb-1">
+                        <span class="text-light nav-font">
+                            {% if user.is_authenticated %}Welcome, <span class="text-info">{{ request.user }} ({{ request.user.userprofile.userrole }})</span> <br>{% endif %}
+                            <small id="clock" class="my-auto text-muted text-light"></small>
+                        </span>
+                        <span><img src="{% static 'home/images/hand.gif' %}" alt="" style="height: 2em; width: auto; vertical-align: middle;"></span>
+                    </h5>
+                    <p id="active_clock" class="text-muted m-0"></p>
+                    </div>
+                    <!-- Right Side Navbar -->
+                    <div class="navbar-nav ms-auto nav-font">
+                    {% if user.is_authenticated %}
+                        <a class="nav-item nav-link" href="{% url "logout" %}"><i class="ri-logout-box-fill "></i>Logout</a>
+                    {% endif %}
+                    </div>
+                </div>
+                </nav>
+            </header> {% endcomment %}
+            <header class="site-header">
+                <nav class="navbar navbar-expand-md ">
+                    <div class="container">
+                        <!-- Sidebar Toggle Button -->
+                        <div class="navbar-nav align-items-xl-center">
+                            <button id="sidebarToggle" class="btn btn-outline-light me-3 my-auto">
+                                <i class="ri-menu-2-line"></i>
+                            </button>
+                        </div>
+                        <div class="ms-2 me-auto my-auto">
+                            <h5 class="d-flex align-items-end gap-1 mb-1">
+                                <span class="text-light nav-font">
+                                    {% if user.is_authenticated %}
+                                        Welcome, <span class="text-info">{{ request.user }} {{ request.user.userprofile.userrole }}</span> <br>
+                                    {% endif %}
+                                    <small id="clock" class="my-auto text-white fw-bold"></small>
+                                </span>
+                                <span><img src="{% static "home/images/hand.gif" %}" alt="" style="height: 2em; width: auto; vertical-align: middle;"></span>
+                            </h5>
+                        </div>
+                        <!-- Right Side Navbar -->
+                        <div class="navbar-nav ms-auto nav-font">
+                            {% if user.is_authenticated %}
+                                <a class="nav-item nav-link" href="{% url "logout" %}"><i class="ri-logout-box-fill "></i>Logout</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </nav>
+            </header>
+
+            <main id="main-content" role="main" class="container mt-3">
+                <div class="row">
+                    <div class="col">
+                    {% if messages %}
+                        {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}">
+                            {{ message }}
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+                    {% block body %}{% endblock %}
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+
+
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+
+  {% comment %} Flatpickr {% endcomment %}
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+  {% comment %} DataTables.Net {% endcomment %}
+  <script src="//cdn.datatables.net/2.2.2/js/dataTables.min.js"></script>
+
+
+  {% comment %} Main Javascript File {% endcomment %}
+  <script src="{% static "home/main.js" %}"></script>
+
+  {% block script %}{% endblock %}
+</body>
+</html>

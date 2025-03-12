@@ -1,0 +1,361 @@
+/* ===== Global Styles ===== */
+body {
+  background: #fafafa;
+  color: #333333;
+  font-family: 'Varela Round', sans-serif!important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #444444;
+  font-size: calc(1rem + 0.8vw); 
+  margin-bottom: 1rem;
+}
+
+.myPrimary{
+  background-color: #004EA8!important; 
+}
+
+.full-nav-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60px; 
+  background-color: #004EA8; 
+  z-index: 1000;
+}
+
+.responsive_text {
+  font-size: calc(0.1rem + 0.7vw) !important;
+}
+
+.responsive_header {
+  font-size: calc(0.45rem + 1vw) !important;
+}
+
+/* ===== Navbar Styles ===== */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.navbar-nav {
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.navbar-nav .nav-link {
+  color: #cbd5db;
+  transition: color 0.2s ease;
+}
+
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link.active {
+  color: #ffffff;
+}
+
+.nav-font {
+  font-size: clamp(0.7rem, 1.2vw, 1rem); /* Improved responsive sizing */
+}
+
+/* ===== Content Sections ===== */
+.content-section {
+  background: #ffffff;
+  padding: 1.25rem;
+  border: 1px solid #dddddd;
+  border-radius: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.article-title {
+  color: #444444;
+  transition: color 0.2s ease;
+}
+
+.article-title:hover {
+  color: #428bca;
+}
+
+/* ===== Layout Structure ===== */
+#page-wrapper {
+  min-height: 100vh;
+  overflow: hidden; 
+}
+
+#content-wrapper {
+  flex: 1;
+  overflow-y: auto; 
+  height: 100vh;
+}
+
+/* ===== Sidebar ===== */
+.sidebar {
+  width: clamp(270px, 20vw, 300px);
+  position: relative; 
+  background: #ffffff;
+  border-right: 1px solid #ddd;
+  height: 100vh;
+  transition: all 0.3s ease;
+  overflow-y: auto; 
+  z-index: 1001;
+}
+
+.sidebar > .p-3 {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto; 
+}
+
+.sidebar.sidebar-hidden {
+  transform: translateX(-100%);
+  width: 0;
+  min-width: 0;
+  opacity: 0; 
+}
+
+/* Custom style for the Accounts toggle */
+.accounts-nav-toggle li {
+  transition: background-color 0.3s ease;
+}
+
+.accounts-nav-toggle li:hover {
+  background-color: #cfe2ff; 
+}
+
+.accounts-nav-item li {
+  background-color: #f8f9fa;  
+  border-left: 4px solid #adb5bd;  
+  color: #212529;
+  transition: background-color 0.3s ease;
+}
+
+.accounts-nav-item li:hover {
+  background-color: #e9ecef; 
+}
+
+/* Responsive Sidebar (mobile) */
+@media (max-width: 992px) {
+  .sidebar {
+    width: 300px;
+    position: fixed;
+    height: 100vh;
+    z-index: 1001;
+    box-shadow: 2px 0 8px rgba(0,0,0,0.1); 
+  }
+  
+  .sidebar.sidebar-hidden {
+    transform: translateX(-100%);
+    width: 300px; 
+  }
+  
+  .sidebar-active::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.3);
+    z-index: 999;
+  }
+}
+
+/* ===== SideBar Menu Styles ===== */
+.menu-icons {
+  font-size: calc(0.1rem + 1vw) !important;
+}
+.menu-item {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+.menu-item:hover {
+  background-color: #5F788A !important;
+  color: white;
+}
+.nav-link.active .menu-item {
+  background-color: #5F788A;
+  color: white;
+}
+.logo-small {
+  width: 50px;
+  height: auto;
+  max-width: 100%;
+}
+
+
+/* ===== Table Styles ===== */
+.projectTables {
+  font-size: calc(0.55rem + 0.2vw);
+  margin-bottom: 0;
+}
+
+.projectTables th,
+.projectTables td {
+  padding: calc(5px + 0.2vw) calc(8px + 0.2vw);
+  vertical-align: middle;
+  border-color: #dee2e6;
+  text-align: center;
+}
+
+.projectTables thead th {
+  font-weight: 600;
+}
+
+button,
+input[type="submit"] {
+  margin-top: 10px;
+}
+
+/* ===== Responsive Adjustments ===== */
+@media (max-width: 768px) {
+  .content-section {
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .projectTables {
+    min-width: 768px;
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .nav-font {
+    font-size: 0.85rem;
+  }
+  
+  .menu-icons {
+    font-size: 1.25rem !important;
+  }
+}
+.container{
+  max-width: 1490px!important;
+}
+
+
+/* === SCROLLBAR STYLES === */
+::-webkit-scrollbar {
+  width: 10px; 
+}
+
+::-webkit-scrollbar-track {
+  background: #dddddd;
+  border-radius: 10px; 
+}
+
+::-webkit-scrollbar-thumb {
+  background: #b3b3b3; 
+  border-radius: 10px; 
+  transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #6a6a9a; 
+}
+html {
+  scroll-behavior: smooth;
+}
+
+
+
+/* === DELETE POP UP STYLES === */
+.modal-confirm {		
+	color: #636363;
+	width: 400px;
+}
+.modal-confirm .modal-content {
+	padding: 20px;
+	border-radius: 5px;
+	border: none;
+	text-align: center;
+	font-size: 14px;
+}
+.modal-confirm .modal-header {
+	border-bottom: none;   
+	position: relative;
+}
+.modal-confirm h4 {
+	text-align: center;
+	font-size: 26px;
+}
+.modal-confirm .close {
+	position: absolute;
+	top: -5px;
+	right: -2px;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.modal-confirm .close i {
+    font-size: 24px;
+    color: #636363;
+    transition: color 0.3s;
+}
+.modal-confirm .close:hover i {
+    color: #ee3535;
+}
+.modal-confirm .modal-body {
+	color: #999;
+}
+.modal-confirm .modal-footer {
+	border: none;
+	text-align: center;		
+	border-radius: 5px;
+	font-size: 13px;
+	padding: 10px 15px 25px;
+}
+.modal-confirm .modal-footer a {
+	color: #999;
+}		
+.modal-confirm .icon-box {
+	width: 80px;
+	height: 80px;
+	margin: 0 auto;
+	border-radius: 50%;
+	z-index: 9;
+	text-align: center;
+	border: 3px solid #f15e5e;
+}
+.modal-confirm .icon-box i {
+	color: #f15e5e;
+	font-size: 46px;
+	display: inline-block;
+}
+.modal-confirm .btn, .modal-confirm .btn:active {
+	color: #fff;
+	border-radius: 3px;
+	background: #60c7c1;
+	text-decoration: none;
+	transition: all 0.4s;
+	line-height: normal;
+	min-width: 120px;
+	border: none;
+	min-height: 40px;
+	margin: 0 5px;
+}
+.modal-confirm .btn-secondary {
+	background: #c1c1c1;
+}
+.modal-confirm .btn-secondary:hover, .modal-confirm .btn-secondary:focus {
+	background: #a8a8a8;
+}
+.modal-confirm .btn-danger {
+	background: #f15e5e;
+}
+.modal-confirm .btn-danger:hover, .modal-confirm .btn-danger:focus {
+	background: #ee3535;
+}
+.trigger-btn {
+	display: inline-block;
+	margin: 100px auto;
+}
+#btnDelete {
+  display: flex;
+  align-items: center; 
+  justify-content: center;
+  height: 100%; 
+}
