@@ -167,23 +167,50 @@ def create_user(request):
     return render(request, 'accounts/create_user.html', context)
 
 
-
 @login_required
 def update_user(request, user_id):
-    if request.user.role not in ['ADMIN', 'OFFICER', 'SUPERUSER']:
-        messages.warning(request, "Unauthorized access")
-        return redirect('home')
-    
     try:
         user_obj = CustomUser.objects.get(id=user_id)
     except CustomUser.DoesNotExist:
         messages.warning(request, "User not found")
         return redirect('student-list')
     
-    if request.method == 'POST':
-        user_obj.email = request.POST.get('email')
+    # Permission Checks:
+    if request.user.id != user_obj.id:
         if request.user.is_superuser:
-            user_obj.role = request.POST.get('role')
+            pass
+        elif request.user.role == 'ADMIN':
+            if user_obj.role == 'ADMIN':
+                messages.warning(request, "Admins cannot update other admin accounts")
+                return redirect('home')
+        elif request.user.role == 'OFFICER':
+            if user_obj.role != 'STUDENT':
+                messages.warning(request, "Officers can only update their own account or student accounts within their department")
+                return redirect('home')
+            else:
+                try:
+                    officer_profile = EnrollmentOfficerProfile.objects.get(user=request.user)
+                except EnrollmentOfficerProfile.DoesNotExist:
+                    messages.warning(request, "Your officer profile was not found")
+                    return redirect('home')
+                try:
+                    student_profile = StudentProfile.objects.get(user=user_obj)
+                except StudentProfile.DoesNotExist:
+                    messages.warning(request, "Student profile not found")
+                    return redirect('student-list')
+                if student_profile.department != officer_profile.department:
+                    messages.warning(request, "You can only update student accounts within your department")
+                    return redirect('home')
+        else:
+            messages.warning(request, "Unauthorized access")
+            return redirect('home')
+    
+    if request.method == 'POST':
+        # Update common fields.
+        user_obj.email = request.POST.get('email')
+        if request.user.is_superuser or request.user.role == 'ADMIN':
+            new_role = request.POST.get('role')
+            user_obj.role = new_role
         user_obj.save()
         
         if user_obj.role == 'STUDENT':
@@ -198,6 +225,13 @@ def update_user(request, user_id):
                 profile.student_id = request.POST.get('student_id')
                 department = get_object_or_404(Department, id=request.POST.get('department'))
                 profile.department = department
+            else:
+                try:
+                    officer_profile = EnrollmentOfficerProfile.objects.get(user=request.user)
+                    profile.department = officer_profile.department
+                except EnrollmentOfficerProfile.DoesNotExist:
+                    messages.warning(request, "Your officer profile was not found")
+                    return redirect('home')
             profile.save()
         elif user_obj.role == 'OFFICER':
             try:
@@ -214,7 +248,6 @@ def update_user(request, user_id):
         return redirect('student-list')
     
     context = {'user_obj': user_obj}
-    
     if user_obj.role == 'STUDENT':
         try:
             profile = StudentProfile.objects.get(user=user_obj)

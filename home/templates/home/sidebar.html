@@ -12,7 +12,7 @@
         </a>
         </div>
         <ul class="list-group my-1">
-        <a href="{% url "home" %}" class="nav-link active rounded">
+        <a href="{% url "home" %}" class="nav-link {% if '/home/' in request.path %}active{% endif %} rounded">
             <li class="list-group-item d-flex align-items-center menu-item">
             <i class="ri-home-9-fill me-1 menu-icons"></i>Home
             </li>
@@ -66,6 +66,12 @@
             </div>
         </ul>
         {% endif %}
-
+        <ul class="list-group my-1">
+            <a href="{% url "account-update" request.user.id %}" class="nav-link {% if '/update/' in request.path %}active{% endif %} rounded">
+            <li class="list-group-item d-flex align-items-center menu-item">
+                <i class="ri-user-settings-fill"></i>My account
+            </li>
+            </a>
+        </ul>
     </div>
 </div>

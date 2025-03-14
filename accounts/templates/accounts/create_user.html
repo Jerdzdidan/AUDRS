@@ -114,13 +114,13 @@
             <div id="departmentRow" class="row g-3">
                 <div class="col-12">
                     <div class="form-floating mb-3">
-                        <select class="form-select" id="department" name="department" required onchange="this.form.submit()">
+                        <select class="form-select" id="department" name="department" required>
                             <option value="" disabled>Select department</option>
                             {% for dept in departments %}
                                 <option value="{{ dept.id }}" {% if selected_department and dept.id == selected_department.id %}selected{% endif %}>{{ dept.name }}</option>
                             {% endfor %}
                         </select>
-                        <label for="department">Department</label>
+                        <label for="department">College Department</label>
                     </div>
                 </div>
             </div>
