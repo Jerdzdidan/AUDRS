@@ -1,7 +1,7 @@
 $(document).ready(function() {
     // ==================== firstYear DataTable ====================
     const $firstYearDataTable = $('#firstYearDataTable').DataTable({
-        order: null,
+        order: [6, 'asc'],
         layout: {
             topStart: null,
             topEnd: null,
@@ -14,12 +14,10 @@ $(document).ready(function() {
         }
     });
 
-    // Stock Table Elements (correct IDs)
     const $firstYearEntries = $('#firstYearCustomEntries');
     const $firstYearSearch = $('#firstYearSearchBar');
     const $firstYearPagination = $('#firstYearCustomPagination');
 
-    // Stock Controls Event Handlers
     $firstYearEntries.on('change', function() {
         $firstYearDataTable.page.len(parseInt(this.value, 10)).draw();
     });
@@ -28,7 +26,7 @@ $(document).ready(function() {
         $firstYearDataTable.search(this.value).draw();
     });
 
-    // Stock Pagination Function
+    // Pagination Function
     function updatefirstYearPagination() {
         const info = $firstYearDataTable.page.info();
         let paginationHtml = '<ul class="pagination justify-content-start ms-2">';

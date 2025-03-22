@@ -25,6 +25,13 @@
             </li>
             </a>
         </ul>
+        <ul class="list-group my-1">
+            <a href="{% url "subject-management-list" %}" class="nav-link rounded">
+            <li class="list-group-item d-flex align-items-center menu-item">
+                <i class="ri-dashboard-fill me-1 menu-icons"></i>Subject Management
+            </li>
+            </a>
+        </ul>
         {% if request.user.role in "[OFFICER,ADMIN]" %}
         <ul class="list-group my-1">
             <a class="nav-link rounded accounts-nav-toggle {% if '/accounts/' in request.path %}active{% endif %}" href="#" id="accountsToggle">

@@ -266,6 +266,7 @@ def update_user(request, user_id):
     return render(request, 'accounts/update_user.html', context)
 
 @login_required
+@role_required(allowed_roles=['ADMIN'])
 def delete_user(request, user_id):
     if request.user.role not in ['ADMIN', 'OFFICER', 'SUPERUSER']:
         messages.warning(request, "Unauthorized access")

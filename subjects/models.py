@@ -15,7 +15,12 @@ class Subject(models.Model):
     
     name = models.CharField(max_length=100)
     code = models.CharField(max_length=20, unique=True)
-    department = models.ForeignKey(Department, on_delete=models.CASCADE, related_name="subjects")
+    # Change department field from ForeignKey to ManyToManyField
+    departments = models.ManyToManyField(
+        Department,
+        related_name="subjects",
+        help_text="Select departments for which this subject is offered"
+    )
     programs = models.ManyToManyField(
         'accounts.Program',
         related_name="subjects",
@@ -36,6 +41,9 @@ class Subject(models.Model):
         related_name='dependent_subjects',
         help_text="Select prerequisite subjects (if any)"
     )
+    semester = models.CharField(max_length=30, choices=[('--','--'), ('1st', '1st Semester'), ('2nd', '2nd Semester')], default='--')
+    lec_units = models.PositiveIntegerField(default=3, help_text="Lecture units")
+    lab_units = models.PositiveIntegerField(default=0, help_text="Laboratory units")
     units = models.PositiveIntegerField(default=3)
     description = models.TextField(blank=True, null=True)
     approved = models.BooleanField(default=True) 

@@ -1,7 +1,7 @@
 $(document).ready(function() {
     // ==================== thirdYear DataTable ====================
     const $thirdYearDataTable = $('#thirdYearDataTable').DataTable({
-        order: null,
+        order: [6, 'asc'],
         layout: {
             topStart: null,
             topEnd: null,
@@ -14,12 +14,10 @@ $(document).ready(function() {
         }
     });
 
-    // Stock Table Elements (correct IDs)
     const $thirdYearEntries = $('#thirdYearCustomEntries');
     const $thirdYearSearch = $('#thirdYearSearchBar');
     const $thirdYearPagination = $('#thirdYearCustomPagination');
 
-    // Stock Controls Event Handlers
     $thirdYearEntries.on('change', function() {
         $thirdYearDataTable.page.len(parseInt(this.value, 10)).draw();
     });
@@ -28,7 +26,7 @@ $(document).ready(function() {
         $thirdYearDataTable.search(this.value).draw();
     });
 
-    // Stock Pagination Function
+    // Pagination Function
     function updatethirdYearPagination() {
         const info = $thirdYearDataTable.page.info();
         let paginationHtml = '<ul class="pagination justify-content-start ms-2">';

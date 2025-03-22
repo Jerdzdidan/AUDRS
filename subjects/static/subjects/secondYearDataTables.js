@@ -1,7 +1,7 @@
 $(document).ready(function() {
-    // ==================== fourthYear DataTable ====================
-    const $fourthYearDataTable = $('#fourthYearDataTable').DataTable({
-        order: null,
+    // ==================== secondYear DataTable ====================
+    const $secondYearDataTable = $('#secondYearDataTable').DataTable({
+        order: [6, 'asc'],
         layout: {
             topStart: null,
             topEnd: null,
@@ -14,23 +14,21 @@ $(document).ready(function() {
         }
     });
 
-    // Stock Table Elements (correct IDs)
-    const $fourthYearEntries = $('#fourthYearCustomEntries');
-    const $fourthYearSearch = $('#fourthYearSearchBar');
-    const $fourthYearPagination = $('#fourthYearCustomPagination');
+    const $secondYearEntries = $('#secondYearCustomEntries');
+    const $secondYearSearch = $('#secondYearSearchBar');
+    const $secondYearPagination = $('#secondYearCustomPagination');
 
-    // Stock Controls Event Handlers
-    $fourthYearEntries.on('change', function() {
-        $fourthYearDataTable.page.len(parseInt(this.value, 10)).draw();
+    $secondYearEntries.on('change', function() {
+        $secondYearDataTable.page.len(parseInt(this.value, 10)).draw();
     });
 
-    $fourthYearSearch.on('keyup', function() {
-        $fourthYearDataTable.search(this.value).draw();
+    $secondYearSearch.on('keyup', function() {
+        $secondYearDataTable.search(this.value).draw();
     });
 
-    // Stock Pagination Function
-    function updatefourthYearPagination() {
-        const info = $fourthYearDataTable.page.info();
+    // Pagination Function
+    function updatesecondYearPagination() {
+        const info = $secondYearDataTable.page.info();
         let paginationHtml = '<ul class="pagination justify-content-start ms-2">';
         
         // Previous Button
@@ -55,16 +53,16 @@ $(document).ready(function() {
             </li>`;
         }
         
-        $fourthYearPagination.html(paginationHtml + '</ul>');
+        $secondYearPagination.html(paginationHtml + '</ul>');
     }
 
     // Stock Pagination Events
-    $fourthYearDataTable.on('draw', updatefourthYearPagination);
-    $fourthYearPagination.on('click', 'a.page-link', function(e) {
+    $secondYearDataTable.on('draw', updatesecondYearPagination);
+    $secondYearPagination.on('click', 'a.page-link', function(e) {
         e.preventDefault();
-        $fourthYearDataTable.page(parseInt($(this).data('page'), 10).draw('page'));
+        $secondYearDataTable.page(parseInt($(this).data('page'), 10).draw('page'));
     });
-    updatefourthYearPagination();
+    updatesecondYearPagination();
 
 
 });

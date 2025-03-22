@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from accounts.decorators import role_required
-from accounts.models import Department, CustomUser, Program, EnrollmentOfficerProfile
+from accounts.models import Department, Program, EnrollmentOfficerProfile
 from .models import Subject
 
 @login_required

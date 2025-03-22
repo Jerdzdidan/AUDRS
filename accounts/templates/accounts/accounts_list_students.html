@@ -74,9 +74,11 @@
                             <a href="{% url "account-update" student.pk %}" class="btn btn-sm btn-outline-success fw-bold responsive_text flex-fill me-1" title="Edit">
                                 <i class="ri-edit-2-fill"></i>
                             </a>
-                            <button type="button" data-bs-toggle="modal" data-bs-target="#myModal" data-deleteData="User: {{ student.last_name }}, {{ student.first_name }}" data-ID="{{ student.id }}" data-moduleName="Delete the account record" class="btn btn-sm btn-outline-danger fw-bold responsive_text flex-fill">
-                                <i class="ri-delete-bin-5-fill"></i>
-                            </button>
+                            {% if request.user.role == "ADMIN" %}
+                                <button type="button" data-bs-toggle="modal" data-bs-target="#myModal" data-deleteData="User: {{ student.last_name }}, {{ student.first_name }}" data-ID="{{ student.id }}" data-moduleName="Delete the account record" class="btn btn-sm btn-outline-danger fw-bold responsive_text flex-fill">
+                                    <i class="ri-delete-bin-5-fill"></i>
+                                </button>
+                            {% endif %}
                         </td>
                     </tr>
                     {% endif %}

@@ -1,7 +1,7 @@
 $(document).ready(function() {
     // ==================== minorSub DataTable ====================
     const $minorSubDataTable = $('#minorSubDataTable').DataTable({
-        order: null,
+        order: [0, 'asc'],
         layout: {
             topStart: null,
             topEnd: null,
@@ -14,12 +14,10 @@ $(document).ready(function() {
         }
     });
 
-    // Stock Table Elements (correct IDs)
     const $minorSubEntries = $('#minorSubCustomEntries');
     const $minorSubSearch = $('#minorSubSearchBar');
     const $minorSubPagination = $('#minorSubCustomPagination');
 
-    // Stock Controls Event Handlers
     $minorSubEntries.on('change', function() {
         $minorSubDataTable.page.len(parseInt(this.value, 10)).draw();
     });
@@ -28,7 +26,7 @@ $(document).ready(function() {
         $minorSubDataTable.search(this.value).draw();
     });
 
-    // Stock Pagination Function
+    // Pagination Function
     function updateminorSubPagination() {
         const info = $minorSubDataTable.page.info();
         let paginationHtml = '<ul class="pagination justify-content-start ms-2">';

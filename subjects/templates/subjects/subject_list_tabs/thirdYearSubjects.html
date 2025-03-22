@@ -1,15 +1,15 @@
-<!-- minorSub Subjects Tab -->
-<div class="tab-pane fade show active" id="minorSub" role="tabpanel" aria-labelledby="minorSub-tab">
+<!-- thirdYear Subjects Tab -->
+<div class="tab-pane fade show" id="thirdYear" role="tabpanel" aria-labelledby="thirdYear-tab">
     <div class="container px-3 pt-3">
       <div class="d-flex justify-content-between align-items-center mb-3">
-        <h4>Second Year Subjects</h4>
+        <h4>Third Year Subjects</h4>
         <a href="#" class="btn btn-primary">Add Subject</a>
       </div>
   
       <!-- Entries and Search Bar -->
       <div class="d-flex justify-content-between align-items-center mt-2 mb-2">
         <div>
-          <select id="minorSubEntries" class="form-select d-inline w-auto border-secondary fw-bold" style="font-size: calc(0.8rem + 0.2vw); cursor: pointer;">
+          <select id="thirdYearCustomEntries" class="form-select d-inline w-auto border-secondary fw-bold" style="font-size: calc(0.8rem + 0.2vw); cursor: pointer;">
             <option value="10">10</option>
             <option value="25">25</option>
             <option value="50">50</option>
@@ -18,36 +18,38 @@
           <span class="ms-2">Entries per page</span>
         </div>
         <div>
-          <input type="text" id="minorSubSearchBar" class="form-control d-inline w-auto border-secondary" placeholder="Search..." style="font-size: calc(0.8rem + 0.2vw);">
+          <input type="text" id="thirdYearSearchBar" class="form-control d-inline w-auto border-secondary" placeholder="Search..." style="font-size: calc(0.8rem + 0.2vw);">
         </div>
       </div>
     </div>
   
-    <!-- minorSub Subjects Table -->
+    <!-- thirdYear Subjects Table -->
     <div class="table-responsive">
-      <table class="table table-striped projectTables" id="minorSubDataTable">
+      <table class="table table-striped projectTables" id="thirdYearDataTable">
         <thead class="table-dark">
           <tr>
-            <th>Code</th>
-            <th>Name</th>
-            <th>Subject Type</th>
-            <th>Year Level</th>
-            <th>Units</th>
-            <th>Description</th>
-            <th>Prerequisites</th>
+            <th class="text-start">Code</th>
+            <th class="text-start">Name</th>
+            <th class="text-start">Subject Type</th>
+            <th class="text-start">Lec</th>
+            <th class="text-start">Lab</th>
+            <th class="text-start">Units</th>
+            <th class="text-start">Semester</th>
+            <th class="text-start">Prerequisites</th>
             <th class="text-center">Actions</th>
           </tr>
         </thead>
         <tbody>
-          {% for subject in minor_subjects %}
+          {% for subject in third_year_subjects %}
           <tr>
-            <td>{{ subject.code }}</td>
-            <td>{{ subject.name }}</td>
-            <td>{{ subject.get_subject_type_display }}</td>
-            <td>{{ subject.year_level }}</td>
-            <td>{{ subject.units }}</td>
-            <td>{{ subject.description }}</td>
-            <td>
+            <td class="text-start">{{ subject.code }}</td>
+            <td class="text-start">{{ subject.name }}</td>
+            <td class="text-start">{{ subject.get_subject_type_display }}</td>
+            <td class="text-start">{{ subject.lec_units }}</td>
+            <td class="text-start">{{ subject.lab_units }}</td>
+            <td class="text-start">{{ subject.units }}</td>
+            <td class="text-start">{{ subject.semester }}</td>
+            <td class="text-start">
               {% if subject.prerequisites.all %}
                 {% for prereq in subject.prerequisites.all %}
                   {{ prereq.code }} - {{ prereq.name }}{% if not forloop.last %}<br>{% endif %}
@@ -74,6 +76,6 @@
     </div>
   
     <!-- Custom Pagination Container -->
-    <div id="minorSubCustomPagination"></div>
+    <div id="thirdYearCustomPagination"></div>
   </div>
   
