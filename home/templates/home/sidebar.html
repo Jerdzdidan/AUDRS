@@ -25,7 +25,7 @@
             </li>
             </a>
         </ul>
-        {% if request.user.role in "[SUPERUSER,ADMIN]" %}
+        {% if request.user.role in "[OFFICER,ADMIN]" %}
         <ul class="list-group my-1">
             <a class="nav-link rounded accounts-nav-toggle {% if '/accounts/' in request.path %}active{% endif %}" href="#" id="accountsToggle">
             <li class="list-group-item d-flex align-items-center menu-item">
@@ -67,10 +67,11 @@
         </ul>
         {% endif %}
         <ul class="list-group my-1">
-        <a href="{% url "account-update" request.user.id %}" class="nav-link {% if '/update/request.user.id' in request.path %}active{% endif %} rounded">
-            <li class="list-group-item d-flex align-items-center menu-item">
-                <i class="ri-user-settings-fill"></i>My account
-            </li>
+            {% url "account-update" request.user.id as update_url %}
+            <a href="{{ update_url }}" class="nav-link {% if request.path == update_url %}active{% endif %} rounded">
+                <li class="list-group-item d-flex align-items-center menu-item">
+                    <i class="ri-user-settings-fill"></i>My account
+                </li>
             </a>
         </ul>
     </div>

@@ -71,7 +71,7 @@ def accounts_list_officers(request):
 @login_required
 @role_required(allowed_roles=['SUPERUSER'])
 def accounts_list_admins(request):
-    admins = CustomUser.objects.filter(role='ADMIN', is_superuser=False)
+    admins = CustomUser.objects.filter(role='ADMIN')
     return render(request, 'accounts/accounts_list_admins.html', {'admins': admins})
 
 @login_required
@@ -187,7 +187,7 @@ def update_user(request, user_id):
         messages.warning(request, "User not found")
         return redirect('student-list')
 
-    if not request.user.is_superuser and request.user.id != user_obj.id:
+    if request.user.role not in ['ADMIN', 'OFFICER'] and request.user.id != user_obj.id:
         messages.warning(request, "You don't have permission to edit this account")
         return redirect('home')
 

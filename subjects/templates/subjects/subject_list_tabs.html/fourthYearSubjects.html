@@ -1,0 +1,79 @@
+<!-- fourthYear Subjects Tab -->
+<div class="tab-pane fade show active" id="fourthYear" role="tabpanel" aria-labelledby="fourthYear-tab">
+    <div class="container px-3 pt-3">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4>Second Year Subjects</h4>
+        <a href="#" class="btn btn-primary">Add Subject</a>
+      </div>
+  
+      <!-- Entries and Search Bar -->
+      <div class="d-flex justify-content-between align-items-center mt-2 mb-2">
+        <div>
+          <select id="fourthYearEntries" class="form-select d-inline w-auto border-secondary fw-bold" style="font-size: calc(0.8rem + 0.2vw); cursor: pointer;">
+            <option value="10">10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+          </select>
+          <span class="ms-2">Entries per page</span>
+        </div>
+        <div>
+          <input type="text" id="fourthYearSearchBar" class="form-control d-inline w-auto border-secondary" placeholder="Search..." style="font-size: calc(0.8rem + 0.2vw);">
+        </div>
+      </div>
+    </div>
+  
+    <!-- fourthYear Subjects Table -->
+    <div class="table-responsive">
+      <table class="table table-striped projectTables" id="fourthYearDataTable">
+        <thead class="table-dark">
+          <tr>
+            <th>Code</th>
+            <th>Name</th>
+            <th>Subject Type</th>
+            <th>Year Level</th>
+            <th>Units</th>
+            <th>Description</th>
+            <th>Prerequisites</th>
+            <th class="text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for subject in fourth_year_subjects %}
+          <tr>
+            <td>{{ subject.code }}</td>
+            <td>{{ subject.name }}</td>
+            <td>{{ subject.get_subject_type_display }}</td>
+            <td>{{ subject.year_level }}</td>
+            <td>{{ subject.units }}</td>
+            <td>{{ subject.description }}</td>
+            <td>
+              {% if subject.prerequisites.all %}
+                {% for prereq in subject.prerequisites.all %}
+                  {{ prereq.code }} - {{ prereq.name }}{% if not forloop.last %}<br>{% endif %}
+                {% endfor %}
+              {% else %}
+                None
+              {% endif %}
+            </td>
+            <td class="text-center">
+              <a href="#" class="btn btn-sm btn-outline-success fw-bold" title="Edit">
+                <i class="ri-edit-2-fill"></i>
+              </a>
+              <button type="button" data-bs-toggle="modal" data-bs-target="#myModal" 
+                      data-deleteData="{{ subject.code }} - {{ subject.name }}" 
+                      data-ID="{{ subject.id }}" data-moduleName="Delete Subject" 
+                      class="btn btn-sm btn-outline-danger fw-bold" title="Delete">
+                <i class="ri-delete-bin-5-fill"></i>
+              </button>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  
+    <!-- Custom Pagination Container -->
+    <div id="fourthYearCustomPagination"></div>
+  </div>
+  
