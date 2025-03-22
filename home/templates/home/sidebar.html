@@ -45,15 +45,15 @@
                 <a href="{% url "officer-list" %}" class="nav-link rounded accounts-nav-item {% if '/officer-list/' in request.path %}active{% endif %}">
                     <li class="list-group-item d-flex align-items-center menu-item">
                         <i class="ri-graduation-cap-fill me-1 menu-icons"></i>
-                        Officers Accounts
+                        Officer Accounts
                     </li>
                 </a>
                 {% endif %}
-                {% if request.user.role in "[SUPERUSER]" %}
+                {% if request.user.role in "[ADMIN]" %}
                     <a href="{% url "admin-list" %}" class="nav-link rounded accounts-nav-item {% if '/admin-list/' in request.path %}active{% endif %}">
                         <li class="list-group-item d-flex align-items-center menu-item">
                             <i class="ri-user-star-fill me-1 menu-icons"></i>
-                            Admins Accounts
+                            Admin Accounts
                         </li>
                     </a>
                 {% endif %}
@@ -67,7 +67,7 @@
         </ul>
         {% endif %}
         <ul class="list-group my-1">
-            <a href="{% url "account-update" request.user.id %}" class="nav-link {% if '/update/' in request.path %}active{% endif %} rounded">
+        <a href="{% url "account-update" request.user.id %}" class="nav-link {% if '/update/request.user.id' in request.path %}active{% endif %} rounded">
             <li class="list-group-item d-flex align-items-center menu-item">
                 <i class="ri-user-settings-fill"></i>My account
             </li>

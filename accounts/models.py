@@ -9,7 +9,7 @@ class CustomUser(AbstractUser):
         ('OFFICER', 'Enrollment Officer'),
         ('STUDENT', 'Student'),
     )
-    role = models.CharField(max_length=20, choices=ROLES, default='STUDENT')
+    role = models.CharField(max_length=20, choices=ROLES, default='ADMIN')
     email = models.EmailField()
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -18,6 +18,14 @@ class CustomUser(AbstractUser):
         blank=True,
         related_name="created_users"
     )
+
+    def save(self, *args, **kwargs):
+        self.role = self.role.upper()  
+        if self.role == 'ADMIN':
+            self.is_superuser = True
+            self.is_staff = True
+            
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.username} ({self.role})"
@@ -43,7 +51,7 @@ class Program(models.Model):
 class StudentProfile(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     student_id = models.CharField(max_length=20, unique=True)
-    program = models.CharField(max_length=100)
+    program = models.ForeignKey(Program, on_delete=models.CASCADE) 
     year_level = models.PositiveIntegerField(default=1)
     department = models.ForeignKey(Department, on_delete=models.CASCADE)
     
