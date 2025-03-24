@@ -1,0 +1,85 @@
+<!-- firstYear Subjects Checklist Tab -->
+<div class="tab-pane fade show active" id="firstYear" role="tabpanel" aria-labelledby="firstYear-tab">
+  <div class="container px-3 pt-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h4>First Year Subjects Checklist</h4>
+      <!-- Optionally remove "Add Subject" for checklist view -->
+    </div>
+
+    <!-- Entries and Search Bar -->
+    <div class="d-flex justify-content-between align-items-center mt-2 mb-2">
+      <div>
+        <select id="firstYearCustomEntries" class="form-select d-inline w-auto border-secondary fw-bold" style="font-size: calc(0.8rem + 0.2vw); cursor: pointer;">
+          <option value="10">10</option>
+          <option value="25">25</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
+        <span class="ms-2">Entries per page</span>
+      </div>
+      <div>
+        <input type="text" id="firstYearSearchBar" class="form-control d-inline w-auto border-secondary" placeholder="Search..." style="font-size: calc(0.8rem + 0.2vw);">
+      </div>
+    </div>
+  </div>
+
+  <!-- firstYear Subjects Checklist Table -->
+  <div class="table-responsive">
+    <table class="table table-striped projectTables" id="firstYearDataTable">
+      <thead class="table-dark">
+        <tr>
+          <th class="text-start">Code</th>
+          <th class="text-start">Name</th>
+          <th class="text-start">Subject Type</th>
+          <th class="text-start">Lec</th>
+          <th class="text-start">Lab</th>
+          <th class="text-start">Units</th>
+          <th class="text-start">Semester</th>
+          <th class="text-start">Prerequisites</th>
+          <th class="text-center">Taken</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in first_year_checklist %}
+        <tr>
+          <td class="text-start">{{ item.subject.code }}</td>
+          <td class="text-start">{{ item.subject.name }}</td>
+          <td class="text-start">{{ item.subject.get_subject_type_display }}</td>
+          <td class="text-start">{{ item.subject.lec_units }}</td>
+          <td class="text-start">{{ item.subject.lab_units }}</td>
+          <td class="text-start">{{ item.subject.units }}</td>
+          <td class="text-start">{{ item.subject.semester }}</td>
+          <td class="text-start">
+            {% if item.subject.prerequisites.all %}
+              {% for prereq in item.subject.prerequisites.all %}
+                {{ prereq.code }} - {{ prereq.name }}{% if not forloop.last %}<br>{% endif %}
+              {% endfor %}
+            {% else %}
+              None
+            {% endif %}
+          </td>
+          <td class="text-center">
+            <!-- Form to toggle the taken status -->
+            <form method="post" action="{% url 'subject_checklist' %}">
+              {% csrf_token %}
+              <input type="hidden" name="subject_id" value="{{ item.subject.id }}">
+              <!-- Toggle the status: if currently not taken, submit "true"; if taken, submit "false" -->
+              <input type="hidden" name="taken" value="{% if not item.taken %}true{% else %}false{% endif %}">
+              <button type="submit" class="btn btn-sm {% if item.taken %}btn-success{% else %}btn-outline-secondary{% endif %}" title="Toggle Taken">
+                {% if item.taken %}✓{% else %}✗{% endif %}
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="9" class="text-center">No first year subjects found.</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Custom Pagination Container -->
+  <div id="firstYearCustomPagination"></div>
+</div>

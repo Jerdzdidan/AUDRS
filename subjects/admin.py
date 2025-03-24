@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Subject, StudentSubjectChecklist
+from .models import Subject
 
 @admin.register(Subject)
 class SubjectAdmin(admin.ModelAdmin):
@@ -14,10 +14,3 @@ class SubjectAdmin(admin.ModelAdmin):
     def get_departments(self, obj):
         return ", ".join([dept.name for dept in obj.departments.all()])
     get_departments.short_description = "Departments"
-
-
-@admin.register(StudentSubjectChecklist)
-class StudentSubjectChecklistAdmin(admin.ModelAdmin):
-    list_display = ('student', 'subject', 'taken', 'taken_date')
-    search_fields = ('student__username', 'subject__code', 'subject__name')
-    list_filter = ('taken',)

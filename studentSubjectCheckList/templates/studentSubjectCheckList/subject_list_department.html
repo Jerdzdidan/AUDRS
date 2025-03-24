@@ -1,0 +1,108 @@
+{% extends "home/layout.html" %}
+{% load static %}
+
+{% block style %}
+  <!-- Your custom styles here -->
+  <link rel="stylesheet" href="{% static 'subjects/main.css' %}">
+{% endblock style %}
+
+{% block body %}
+<div class="container">
+  <div class="d-flex justify-content-between border-bottom align-items-center">
+    <h3>Subject - <span class="text-primary">Lists</span></h3>
+  </div>
+
+  <!-- Filter Section -->
+  <div class="row my-3">
+      {% if departments %}
+        <!-- For Admin: Show Department + Program filter -->
+        <div class="col-12">
+          <form method="get" class="d-inline">
+            <label for="departmentFilter" class="me-2 fw-bold">Filter by Department:</label>
+            <select name="department" id="departmentFilter" class="form-select d-inline w-auto" onchange="this.form.submit()">
+              <option value="">All Departments</option>
+              {% for dept in departments %}
+                <option value="{{ dept.id }}" {% if selected_department and dept.id == selected_department.id %}selected{% endif %}>
+                  {{ dept.name }}
+                </option>
+              {% endfor %}
+            </select>
+            <label for="programFilter" class="ms-4 me-2 fw-bold">Filter by Program:</label>
+            <select name="program" id="programFilter" class="form-select d-inline w-auto" onchange="this.form.submit()">
+              <option value="">All Programs</option>
+              {% for program in programs %}
+                <option value="{{ program.id }}" {% if program.id|stringformat:"s" == selected_program %}selected{% endif %}>
+                  {{ program.name }}
+                </option>
+              {% endfor %}
+            </select>
+          </form>
+        </div>
+      {% else %}
+        <!-- For Officers: Department filter is hidden because it's automatically set. Only show Program filter -->
+        <div class="col-12">
+          <form method="get" class="d-inline">
+            <label for="programFilter" class="me-2 fw-bold">Filter by Program:</label>
+            <select name="program" id="programFilter" class="form-select d-inline w-auto" onchange="this.form.submit()">
+              <option value="">All Programs</option>
+              {% for program in programs %}
+                <option value="{{ program.id }}" {% if program.id|stringformat:"s" == selected_program %}selected{% endif %}>
+                  {{ program.name }}
+                </option>
+              {% endfor %}
+            </select>
+          </form>
+        </div>
+      {% endif %}
+  </div>
+
+  <!-- Nav tabs -->
+  <ul class="nav nav-tabs" id="subjectTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active fw-bold" id="firstYear-tab" data-bs-toggle="tab" data-bs-target="#firstYear" type="button" role="tab" aria-controls="firstYear" aria-selected="true">1st Yr.</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link fw-bold" id="secondYear-tab" data-bs-toggle="tab" data-bs-target="#secondYear" type="button" role="tab" aria-controls="secondYear" aria-selected="false">2nd Yr.</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link fw-bold" id="thirdYear-tab" data-bs-toggle="tab" data-bs-target="#thirdYear" type="button" role="tab" aria-controls="thirdYear" aria-selected="false">3rd Yr.</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link fw-bold" id="fourthYear-tab" data-bs-toggle="tab" data-bs-target="#fourthYear" type="button" role="tab" aria-controls="fourthYear" aria-selected="false">4th Yr.</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link fw-bold" id="minorSub-tab" data-bs-toggle="tab" data-bs-target="#minorSub" type="button" role="tab" aria-controls="minorSub" aria-selected="false">MINOR SUBS</button>
+    </li>
+  </ul>
+
+  <!-- Tab content -->
+  <article class="tab-content content-section shadow-lg p-0" id="subjectTabsContent">
+    {% include "subjects/subject_list_tabs/firstYearSubjects.html" %}
+    {% include "subjects/subject_list_tabs/secondYearSubjects.html" %}
+    {% include "subjects/subject_list_tabs/thirdYearSubjects.html" %}
+    {% include "subjects/subject_list_tabs/fourthYearSubjects.html" %}
+    {% include "subjects/subject_list_tabs/minorSubjects.html" %}
+  </article>
+</div>
+{% endblock body %}
+
+{% block script %}
+  <script src="{% static 'subjects/firstYearDataTables.js' %}"></script>
+  <script src="{% static 'subjects/secondYearDataTables.js' %}"></script>
+  <script src="{% static 'subjects/thirdYearDataTables.js' %}"></script>
+  <script src="{% static 'subjects/fourthYearDataTables.js' %}"></script>
+  <script src="{% static 'subjects/minorSubjectsDataTables.js' %}"></script>
+  <script>
+    $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function(e) {
+      localStorage.setItem('activeTab', $(e.target).attr('data-bs-target'));
+    });
+    var activeTab = localStorage.getItem('activeTab');
+    if(activeTab) {
+      var someTabTriggerEl = document.querySelector('button[data-bs-target="' + activeTab + '"]');
+      if(someTabTriggerEl) {
+        var tab = new bootstrap.Tab(someTabTriggerEl);
+        tab.show();
+      }
+    }
+  </script>
+{% endblock script %}
