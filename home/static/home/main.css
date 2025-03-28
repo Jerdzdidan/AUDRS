@@ -187,15 +187,12 @@ h1, h2, h3, h4, h5, h6 {
 /* ===== Table Styles ===== */
 .projectTables {
   font-size: calc(0.55rem + 0.2vw);
-  margin-bottom: 0;
 }
 
 .projectTables th,
 .projectTables td {
-  padding: calc(5px + 0.2vw) calc(8px + 0.2vw);
   vertical-align: middle;
   border-color: #dee2e6;
-  text-align: center;
 }
 
 .projectTables thead th {

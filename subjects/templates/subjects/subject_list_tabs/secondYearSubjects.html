@@ -1,11 +1,7 @@
 <!-- secondYear Subjects Tab -->
 <div class="tab-pane fade show" id="secondYear" role="tabpanel" aria-labelledby="secondYear-tab">
     <div class="container px-3 pt-3">
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <h4>Second Year Subjects</h4>
-        <a href="#" class="btn btn-primary">Add Subject</a>
-      </div>
-  
+      
       <!-- Entries and Search Bar -->
       <div class="d-flex justify-content-between align-items-center mt-2 mb-2">
         <div>
@@ -35,6 +31,9 @@
             <th class="text-start">Lab</th>
             <th class="text-start">Units</th>
             <th class="text-start">Semester</th>
+            {% if request.user.role == "OFFICER" %}
+              <th class="text-start">Status</th>
+            {% endif %}
             <th class="text-start">Prerequisites</th>
             <th class="text-center">Actions</th>
           </tr>
@@ -49,6 +48,15 @@
             <td class="text-start">{{ subject.lab_units }}</td>
             <td class="text-start">{{ subject.units }}</td>
             <td class="text-start">{{ subject.semester }}</td>
+            {% if request.user.role == "OFFICER" %}
+            <td class="text-start align-middle">
+              {% if subject.approved %}
+                <span class="badge p-2 fw-bold bg-success border border-dark text-white my-auto">APPROVED</span>
+              {% else %}
+                <span class="badge p-2 fw-bold bg-warning border border-dark text-dark my-auto">PENDING</span>
+              {% endif %}
+            </td>
+            {% endif %}
             <td class="text-start">
               {% if subject.prerequisites.all %}
                 {% for prereq in subject.prerequisites.all %}
@@ -59,15 +67,17 @@
               {% endif %}
             </td>
             <td class="text-center">
-              <a href="#" class="btn btn-sm btn-outline-success fw-bold" title="Edit">
+              <a href="{% url "subject-management-update-subject" subject.id %}" class="btn btn-sm btn-outline-success fw-bold" title="Edit">
                 <i class="ri-edit-2-fill"></i>
               </a>
+              {% if request.user.role == "ADMIN" %}
               <button type="button" data-bs-toggle="modal" data-bs-target="#myModal" 
                       data-deleteData="{{ subject.code }} - {{ subject.name }}" 
                       data-ID="{{ subject.id }}" data-moduleName="Delete Subject" 
                       class="btn btn-sm btn-outline-danger fw-bold" title="Delete">
                 <i class="ri-delete-bin-5-fill"></i>
               </button>
+              {% endif %}
             </td>
           </tr>
           {% endfor %}

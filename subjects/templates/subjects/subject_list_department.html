@@ -2,7 +2,6 @@
 {% load static %}
 
 {% block style %}
-  <!-- Your custom styles here -->
   <link rel="stylesheet" href="{% static 'subjects/main.css' %}">
 {% endblock style %}
 
@@ -104,5 +103,18 @@
         tab.show();
       }
     }
+    $('#myModal').on('show.bs.modal', function(event) {
+      var button = $(event.relatedTarget);
+      var deleteData = button.attr('data-deleteData');
+      var dataID = button.attr('data-ID')
+      var dataUrl = button.attr('data-Url')
+      var moduleName = button.attr('data-moduleName')
+      
+      var txtDeleteData = deleteData
+      $(this).find('#deleteMessage').text('Are you sure you want to 0 for: '.replace('0', moduleName));
+      $(this).find('#txtDeleteData').text(txtDeleteData);
+      $(this).find('#btnDelete').attr('href', '{% url "subject-management-delete-subject" 0 %}'.replace('0', dataID));
+    });
   </script>
+  
 {% endblock script %}

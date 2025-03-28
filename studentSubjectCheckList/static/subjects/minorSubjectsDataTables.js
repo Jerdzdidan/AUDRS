@@ -60,7 +60,7 @@ $(document).ready(function() {
     $minorSubDataTable.on('draw', updateminorSubPagination);
     $minorSubPagination.on('click', 'a.page-link', function(e) {
         e.preventDefault();
-        $minorSubDataTable.page(parseInt($(this).data('page'), 10).draw('page'));
+        $minorSubDataTable.page(parseInt($(this).data('page'), 10)).draw('page');
     });
     updateminorSubPagination();
 

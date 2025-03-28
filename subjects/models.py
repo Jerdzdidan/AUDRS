@@ -46,7 +46,7 @@ class Subject(models.Model):
     lab_units = models.PositiveIntegerField(default=0, help_text="Laboratory units")
     units = models.PositiveIntegerField(default=3)
     description = models.TextField(blank=True, null=True)
-    approved = models.BooleanField(default=True) 
+    approved = models.BooleanField(default=False) 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     

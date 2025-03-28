@@ -26,12 +26,46 @@
             </a>
         </ul>
         <ul class="list-group my-1">
-            <a href="{% url "subject-management-list" %}" class="nav-link rounded">
+            <a href="{% url "student-subject-studentlist" %}" class="nav-link rounded">
             <li class="list-group-item d-flex align-items-center menu-item">
-                <i class="ri-dashboard-fill me-1 menu-icons"></i>Subject Management
+                <i class="ri-git-repository-fill me-1 menu-icons"></i>
+                Student-Subject-Checklist
             </li>
             </a>
         </ul>
+        {% if request.user.role in "[OFFICER,ADMIN]" %}
+        <ul class="list-group my-1">
+            <a class="nav-link rounded accounts-nav-toggle {% if '/subjects/' in request.path %}active{% endif %}" href="#" id="subjectManagementToggle">
+            <li class="list-group-item d-flex align-items-center menu-item">
+                <i class="ri-book-read-fill me-1 menu-icons"></i>
+                <span>Subject-Management</span>
+                <i class="ri-arrow-down-s-line ms-auto"></i>
+            </li>
+            </a>
+            <div class="collapse {% if '/subjects/' in request.path %}show{% endif %}" id="subjectManagementDropdown">
+                <a href="{% url "subject-management-list" %}" class="nav-link rounded accounts-nav-item {% if '/subject-list/' in request.path %}active{% endif %}">
+                    <li class="list-group-item d-flex align-items-center menu-item">
+                        <i class="ri-list-view me-1 menu-icons"></i> 
+                        Subject-List
+                    </li>
+                </a>
+                {% if request.user.role == "ADMIN" %}
+                <a href="{% url "subject-management-approval-queue" %}" class="nav-link rounded accounts-nav-item {% if '/subject-approval-queue/' in request.path %}active{% endif %}">
+                    <li class="list-group-item d-flex align-items-center menu-item">
+                        <i class="ri-list-check-3 me-1 menu-icons"></i>
+                        Subject-Approval
+                    </li>
+                </a>
+                {% endif %}
+                <a href="{% url "subject-management-create-subject" %}" class="nav-link rounded accounts-nav-item {% if '/create-subject/' in request.path %}active{% endif %}">
+                    <li class="list-group-item d-flex align-items-center menu-item">
+                        <i class="ri-play-list-add-fill me-1 menu-icons"></i> 
+                        Add Subject
+                    </li>
+                </a>
+            </div>
+        </ul>
+        {% endif %}
         {% if request.user.role in "[OFFICER,ADMIN]" %}
         <ul class="list-group my-1">
             <a class="nav-link rounded accounts-nav-toggle {% if '/accounts/' in request.path %}active{% endif %}" href="#" id="accountsToggle">

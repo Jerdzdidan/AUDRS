@@ -2,12 +2,54 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from subjects.models import Subject
 from .models import StudentSubjectChecklist
-from accounts.models import StudentProfile
+from accounts.decorators import role_required
+from accounts.models import StudentProfile, EnrollmentOfficerProfile, Department, Program
 
 @login_required
-def subject_checklist(request):
-    student = request.user
-    student_profile = get_object_or_404(StudentProfile, user=student)
+def student_list_for_checklist(request):
+    # Determine if the logged-in user is an admin or officer.
+    if request.user.role.upper() == "ADMIN" or request.user.is_superuser:
+        # For admins, get all student profiles
+        student_profiles = StudentProfile.objects.all()
+        department_filter = request.GET.get('department')
+        program_filter = request.GET.get('program')
+        
+        if department_filter:
+            student_profiles = student_profiles.filter(department__id=department_filter)
+        if program_filter:
+            student_profiles = student_profiles.filter(program__id=program_filter)
+        
+        departments = Department.objects.all()
+        programs = Program.objects.all()
+        selected_department = department_filter
+        selected_program = program_filter
+    else:
+        # For officers, only show students in their department
+        officer_profile = get_object_or_404(EnrollmentOfficerProfile, user=request.user)
+        student_profiles = StudentProfile.objects.filter(department=officer_profile.department)
+        program_filter = request.GET.get('program')
+        if program_filter:
+            student_profiles = student_profiles.filter(program__id=program_filter)
+        
+        departments = None  # Not used for officers
+        programs = officer_profile.department.programs.all()
+        selected_department = None
+        selected_program = program_filter
+
+    context = {
+        'student_profiles': student_profiles,
+        'departments': departments,
+        'programs': programs,
+        'selected_department': selected_department,
+        'selected_program': selected_program,
+    }
+    return render(request, "studentSubjectChecklist/student_list_for_checklist.html", context)
+
+
+@login_required
+def subject_checklist(request, student_id):
+    student_id = student_id
+    student_profile = get_object_or_404(StudentProfile, student_id=student_id)
     
     major_subjects = Subject.objects.filter(
         approved=True,
@@ -31,7 +73,7 @@ def subject_checklist(request):
         checklist = []
         for subject in subject_queryset:
             item, created = StudentSubjectChecklist.objects.get_or_create(
-                student=student,
+                student=student_profile,
                 subject=subject
             )
             checklist.append(item)
@@ -65,4 +107,4 @@ def subject_checklist(request):
         'minor_checklist': minor_checklist,
         'student_profile': student_profile,
     }
-    return render(request, "studentSubjectChecklist/subject_checklist.html", context)
+    return render(request, "studentSubjectChecklist/student_subject_checklist.html", context)

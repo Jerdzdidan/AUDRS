@@ -11,7 +11,16 @@ $(document).ready(function() {
       });
     }
 
-    // Sidebar dropdown functionality
+    // Sidebar dropdown functionality for Subject-Management Dropdown
+    $(document).ready(function () {
+      $("#subjectManagementToggle").click(function (e) {
+        e.preventDefault();
+        $("#subjectManagementDropdown").slideToggle(300); 
+        $(this).toggleClass("active"); 
+      });
+    });
+
+    // Sidebar dropdown functionality for Accounts Dropdown
     $(document).ready(function () {
       $("#accountsToggle").click(function (e) {
         e.preventDefault();

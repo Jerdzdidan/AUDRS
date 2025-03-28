@@ -12,7 +12,7 @@ def role_required(allowed_roles=None):
             if request.user.is_superuser:
                 return view_func(request, *args, **kwargs)
             if request.user.role not in allowed_roles:
-                messages.error(request, "Unauthorized access")
+                messages.warning(request, "Unauthorized access")
                 return redirect('home')
             return view_func(request, *args, **kwargs)
         return _wrapped_view

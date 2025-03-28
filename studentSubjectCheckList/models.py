@@ -1,12 +1,11 @@
 from django.db import models
-from accounts.models import CustomUser
+from accounts.models import StudentProfile
 from subjects.models import Subject
 
 class StudentSubjectChecklist(models.Model):
     student = models.ForeignKey(
-        CustomUser,
+        StudentProfile,
         on_delete=models.CASCADE,
-        limit_choices_to={'role': 'STUDENT'},
         related_name='subject_checklists'
     )
     subject = models.ForeignKey(
@@ -24,4 +23,4 @@ class StudentSubjectChecklist(models.Model):
 
     def __str__(self):
         status = "Taken" if self.taken else "Not Taken"
-        return f"{self.student.username} - {self.subject.code} ({status})"
+        return f"{self.student.user.username} - {self.subject.code} ({status})"

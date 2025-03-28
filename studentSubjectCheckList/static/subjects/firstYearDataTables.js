@@ -60,7 +60,7 @@ $(document).ready(function() {
     $firstYearDataTable.on('draw', updatefirstYearPagination);
     $firstYearPagination.on('click', 'a.page-link', function(e) {
         e.preventDefault();
-        $firstYearDataTable.page(parseInt($(this).data('page'), 10).draw('page'));
+        $firstYearDataTable.page(parseInt($(this).data('page'), 10)).draw('page');
     });
     updatefirstYearPagination();
 

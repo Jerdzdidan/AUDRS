@@ -1,0 +1,194 @@
+{% extends "home/layout.html" %}
+
+{% block style %}
+<!-- You can add any custom styles here if needed -->
+{% endblock style %}
+
+{% block body %}
+<h3 class="mb-3">Subject Management - <span class="text-primary">Approval Queue</span></h3>
+<article class="content-section border rounded p-0 shadow-sm">
+    <div class="container">
+        <div class="row mt-2">
+            <div class="col-auto">
+                <select id="customEntries" class="form-select d-inline w-auto border-secondary fw-bold" style="font-size: calc(0.8rem + 0.2vw); cursor: pointer; vertical-align: middle;">
+                    <option value="10">10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
+                <span class="d-inline ms-2" style="font-size: calc(0.8rem + 0.2vw); vertical-align: middle;">Entries per page</span>
+            </div>
+            <div class="col-auto ms-auto">
+                <input type="text" id="searchBar" class="form-control d-inline w-auto border-secondary" placeholder="Search..." style="font-size: calc(0.8rem + 0.2vw); vertical-align: middle;">
+            </div>
+        </div>
+    </div>
+    <div class="table-responsive table-nowrap mt-2">
+        <table id="dataTable" class="table table-light table-hover table-striped text-center m-0 projectTables">
+            <thead class="table-dark">
+                <tr>
+                    <th class="text-center">Subject Code</th>
+                    <th class="text-center">Subject Name</th>
+                    <th class="text-center">Subject Type</th>
+                    <th class="text-center">Date Created</th>
+                    <th class="text-center">Options</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for subject in pending_subjects %}
+                <tr>
+                    <td style="vertical-align: middle;">{{ subject.code }}</td>
+                    <td style="vertical-align: middle;">{{ subject.name }}</td>
+                    <td style="vertical-align: middle;">{{ subject.subject_type }}</td>
+                    <td style="vertical-align: middle;">{{ subject.created_at|date:'M. d, Y' }}</td>
+                    <td style="vertical-align: middle;">
+                         <!-- Details Button -->
+                         <button type="button" class="btn btn-sm btn-outline-info"
+                            data-bs-toggle="modal" data-bs-target="#subjectDisplayModal"
+                            data-code="{{ subject.code }}"
+                            data-name="{{ subject.name }}"
+                            data-subjecttype="{{ subject.subject_type }}"
+                            data-yearlevel="{{ subject.year_level }}"
+                            data-semester="{{ subject.semester }}"
+                            data-lecunits="{{ subject.lec_units }}"
+                            data-labunits="{{ subject.lab_units }}"
+                            data-units="{{ subject.units }}"
+                            data-description="{{ subject.description|default:'No description provided.' }}"
+                            data-approved="{% if subject.approved %}APPROVED{% else %}PENDING{% endif %}"
+                            data-createdat="{{ subject.created_at|date:'M. d, Y' }}"
+                            title="Details">
+                        <i class="ri-information-line"></i>
+                        </button>
+                        <a href="{% url 'subject-management-update-subject' subject.id %}" class="btn btn-sm btn-outline-success fw-bold responsive_text flex-fill" title="Edit">
+                            <i class="ri-edit-2-fill"></i>
+                        </a>
+                        <form method="POST" action="{% url 'subject-management-approval-queue' %}" class="d-inline">
+                            {% csrf_token %}
+                            <input type="hidden" name="subject_id" value="{{ subject.id }}">
+                            <input type="hidden" name="action" value="approve">
+                            <button type="submit" class="btn btn-sm btn-outline-primary fw-bold responsive_text flex-fill" title="Approve">
+                                <i class="ri-check-line"></i>
+                            </button>
+                        </form>
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#myModal" 
+                            data-deleteData="{{ subject.code }} - {{ subject.name }}" 
+                            data-ID="{{ subject.id }}" data-moduleName="Delete Subject" 
+                            class="btn btn-sm btn-outline-danger fw-bold" title="Delete">
+                            <i class="ri-delete-bin-5-fill"></i>
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div id="customPagination"></div>
+    </div>
+</article>
+
+<!-- DISPLAY Modal for Subject Details -->
+<div id="subjectDisplayModal" class="modal fade" tabindex="-1" aria-labelledby="subjectModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-confirm modal-dialog-centered" style="max-width: 600px;">
+      <div class="modal-content">
+        <div class="modal-header mb-0">
+          <div class="icon-box border-primary d-flex justify-content-center align-items-center">
+            <i class="ri-book-2-line text-primary"></i>
+          </div>
+          <button type="button" class="btn-close close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="row mt-0">
+          <h3 class="w-100 modal-title text-dark fw-bold mb-0">Subject Code:</h3>
+          <h5 id="subjectCode" class="d-flex align-items-center justify-content-center text-dark fw-bold border border-secondary rounded bg-secondary-subtle mx-auto w-auto py-1"></h5>
+        </div>
+        <div class="modal-body text-start">
+          <div class="row">
+            <div class="col-12 col-sm-6">
+              <h6 class="text-dark fw-bold mb-0 text-center">Subject Name:</h6>
+              <p id="subjectName" class="d-flex align-items-center justify-content-center text-muted fw-bold border border-secondary rounded bg-secondary-subtle mx-auto w-auto"></p>
+            </div>
+            <div class="col-12 col-sm-6">
+              <h6 class="text-dark fw-bold mb-0 text-center">Subject Type:</h6>
+              <p id="subjectType" class="d-flex align-items-center justify-content-center text-muted fw-bold border border-secondary rounded bg-secondary-subtle mx-auto w-auto"></p>
+            </div>
+            <div class="col-12 col-sm-6">
+              <h6 class="text-dark fw-bold mb-0 text-center">Year Level:</h6>
+              <p id="subjectYearLevel" class="d-flex align-items-center justify-content-center text-muted fw-bold border border-secondary rounded bg-secondary-subtle mx-auto w-auto"></p>
+            </div>
+            <div class="col-12 col-sm-6">
+              <h6 class="text-dark fw-bold mb-0 text-center">Semester:</h6>
+              <p id="subjectSemester" class="d-flex align-items-center justify-content-center text-muted fw-bold border border-secondary rounded bg-secondary-subtle mx-auto w-auto"></p>
+            </div>
+            <div class="col-12 col-sm-4">
+              <h6 class="text-dark fw-bold mb-0 text-center">Lec Units:</h6>
+              <p id="subjectLecUnits" class="d-flex align-items-center justify-content-center text-muted fw-bold border border-secondary rounded bg-secondary-subtle mx-auto w-auto"></p>
+            </div>
+            <div class="col-12 col-sm-4">
+              <h6 class="text-dark fw-bold mb-0 text-center">Lab Units:</h6>
+              <p id="subjectLabUnits" class="d-flex align-items-center justify-content-center text-muted fw-bold border border-secondary rounded bg-secondary-subtle mx-auto w-auto"></p>
+            </div>
+            <div class="col-12 col-sm-4">
+              <h6 class="text-dark fw-bold mb-0 text-center">Total Units:</h6>
+              <p id="subjectUnits" class="d-flex align-items-center justify-content-center text-muted fw-bold border border-secondary rounded bg-secondary-subtle mx-auto w-auto"></p>
+            </div>
+            <div class="col-12">
+              <h6 class="text-dark fw-bold mb-0">Description:</h6>
+              <p id="subjectDescription" class="justify-content-center text-muted fw-bold border border-secondary rounded bg-secondary-subtle px-2 py-1" style="min-height: 100px;"></p>
+            </div>
+            <div class="col-12 col-sm-6">
+              <h6 class="text-dark fw-bold mb-0 text-center">Status:</h6>
+              <p id="subjectApproved" class="d-flex align-items-center justify-content-center text-muted fw-bold border border-secondary rounded bg-secondary-subtle mx-auto w-auto"></p>
+            </div>
+            <div class="col-12 col-sm-6">
+              <h6 class="text-dark fw-bold mb-0 text-center">Created At:</h6>
+              <p id="subjectCreatedAt" class="d-flex align-items-center justify-content-center text-muted fw-bold border border-secondary rounded bg-secondary-subtle mx-auto w-auto"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock body %}
+
+{% block script %}
+<script>
+    $('#subjectDisplayModal').on('show.bs.modal', function(event) {
+        var button = $(event.relatedTarget);
+        var code = button.data('code');
+        var name = button.data('name');
+        var subjectType = button.data('subjecttype');
+        var yearLevel = button.data('yearlevel');
+        var semester = button.data('semester');
+        var lecUnits = button.data('lecunits');
+        var labUnits = button.data('labunits');
+        var units = button.data('units');
+        var description = button.data('description');
+        var approved = button.data('approved');
+        var createdAt = button.data('createdat');
+        
+        var modal = $(this);
+        modal.find('#subjectCode').text(code);
+        modal.find('#subjectName').text(name);
+        modal.find('#subjectType').text(subjectType);
+        modal.find('#subjectYearLevel').text(yearLevel);
+        modal.find('#subjectSemester').text(semester);
+        modal.find('#subjectLecUnits').text(lecUnits);
+        modal.find('#subjectLabUnits').text(labUnits);
+        modal.find('#subjectUnits').text(units);
+        modal.find('#subjectDescription').text(description);
+        modal.find('#subjectApproved').text(approved);
+        modal.find('#subjectCreatedAt').text(createdAt);
+    });
+
+    $('#myModal').on('show.bs.modal', function(event) {
+        var button = $(event.relatedTarget);
+        var deleteData = button.attr('data-deleteData');
+        var dataID = button.attr('data-ID')
+        var dataUrl = button.attr('data-Url')
+        var moduleName = button.attr('data-moduleName')
+        
+        var txtDeleteData = deleteData
+        $(this).find('#deleteMessage').text('Are you sure you want to 0 for: '.replace('0', moduleName));
+        $(this).find('#txtDeleteData').text(txtDeleteData);
+        $(this).find('#btnDelete').attr('href', '{% url "subject-management-delete-subject" 0 %}'.replace('0', dataID));
+    });
+</script>
+{% endblock script %}

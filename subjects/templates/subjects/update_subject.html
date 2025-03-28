@@ -1,0 +1,222 @@
+{% extends "home/layout.html" %}
+{% load static %}
+
+{% block title %}Update Subject{% endblock title %}
+
+{% block style %}
+<style>
+    .input-group-text {
+        padding: 0;
+        border-left: 0;
+    }
+    .btn-group-vertical .btn {
+        border-radius: 0 !important;
+        padding: 0 12px;
+        height: 50%;
+    }
+    .input-group .form-control {
+        border-right: 0;
+    }
+</style>
+{% endblock style %}
+
+{% block body %}
+<article class="content-section border-secondary-subtle rounded p-3 shadow-lg">
+  <h2 class="mb-4 border-bottom pb-2">Update Subject</h2>
+  <form method="post" novalidate id="updateSubjectForm">
+    {% csrf_token %}
+    <!-- Basic Information -->
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label for="name" class="form-label fw-bold mb-0">Subject Name:</label>
+        <input type="text" class="form-control {% if request.user.role != "ADMIN" %}bg-secondary-subtle text-muted{% endif %}  mt-0" id="name" name="name" required placeholder="Subject Name" {% if request.user.role != "ADMIN" %}readonly{% endif %}  autocomplete="off" value="{{ subject.name }}">
+      </div>
+      <div class="col-md-6">
+        <label for="code" class="form-label fw-bold mb-0">Subject Code:</label>
+        <input type="text" class="form-control {% if request.user.role != "ADMIN" %}bg-secondary-subtle text-muted{% endif %} mt-0" id="code" name="code" required placeholder="Subject Code" {% if request.user.role != "ADMIN" %}readonly{% endif %} autocomplete="off" value="{{ subject.code }}">
+      </div>
+    </div>
+    
+    <!-- Subject Type & Conditional Fields -->
+    <div class="row g-3">
+        <div class="col-md-6">
+            <label for="subject_type" class="form-label fw-bold mt-2 mb-0">Subject Type:</label>
+            {% if request.user.role == "ADMIN" %}
+              <select class="form-select" id="subject_type" name="subject_type" required>
+                <option value="" selected disabled>Select Subject Type</option>
+                <option value="MAJOR" {% if subject.subject_type == "MAJOR" %}selected{% endif %}>Major</option>
+                <option value="MINOR" {% if subject.subject_type == "MINOR" %}selected{% endif %}>Minor</option>
+              </select>
+            {% else %}
+              <input type="text" id="subject_type_display" class="form-control bg-secondary-subtle text-muted mt-0" value="{{ subject.subject_type }}" readonly>
+              <input type="hidden" id="subject_type" name="subject_type" value="{{ subject.subject_type }}">
+            {% endif %}
+        </div>
+      <div class="col-md-6" id="yearLevelRow">
+        <label for="year_level" class="form-label fw-bold mt-2 mb-0">Year Level:</label>
+        <select class="form-select" id="year_level" name="year_level">
+          <option value="" disabled>Select Year Level</option>
+          <option value="1" {% if subject.year_level == 1 %}selected{% endif %}>1st Yr.</option>
+          <option value="2" {% if subject.year_level == 2 %}selected{% endif %}>2nd Yr.</option>
+          <option value="3" {% if subject.year_level == 3 %}selected{% endif %}>3rd Yr.</option>
+          <option value="4" {% if subject.year_level == 4 %}selected{% endif %}>4th Yr.</option>
+        </select>
+      </div>
+    </div>
+    
+    <!-- Semester (only for MAJOR; for MINOR, it will be set to "--") -->
+    <div class="row g-3" id="semesterRow">
+      <div class="col-md-6">
+        <label for="semester" class="form-label fw-bold mt-2 mb-0">Semester:</label>
+        <select class="form-select" id="semester" name="semester">
+          <option value="" disabled>Select Semester</option>
+          <option value="1st" {% if subject.semester == "1st" %}selected{% endif %}>1st Semester</option>
+          <option value="2nd" {% if subject.semester == "2nd" %}selected{% endif %}>2nd Semester</option>
+        </select>
+      </div>
+    </div>
+    
+    <!-- Units Section -->
+    <div class="row g-3">
+        <div class="col-md-4">
+            <label for="lec_units" class="form-label fw-bold mt-2 mb-0">Lecture Units:</label>
+            <div class="input-group">
+                <input type="text" class="form-control" id="lec_units" name="lec_units" 
+                    placeholder="Lecture Units" required min="0" max="3" value="{{ subject.lec_units }}">
+                <span class="input-group-text p-0 bg-transparent">
+                    <div class="btn-group-vertical h-100">
+                        <button class="btn btn-outline-secondary border-bottom-0 rounded-0 increment" type="button">+</button>
+                        <button class="btn btn-outline-secondary border-top-0 rounded-0 decrement" type="button">-</button>
+                    </div>
+                </span>
+            </div>     
+        </div>
+        
+        <div class="col-md-4">
+            <label for="lab_units" class="form-label fw-bold mt-2 mb-0">Laboratory Units:</label>
+            <div class="input-group">
+                <input type="text" class="form-control" id="lab_units" name="lab_units" 
+                    placeholder="Laboratory Units" required min="0" max="3" value="{{ subject.lab_units }}">
+                <span class="input-group-text p-0 bg-transparent">
+                    <div class="btn-group-vertical h-100">
+                        <button class="btn btn-outline-secondary border-bottom-0 rounded-0 increment" type="button">+</button>
+                        <button class="btn btn-outline-secondary border-top-0 rounded-0 decrement" type="button">-</button>                            
+                    </div>
+                </span>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <label for="units" class="form-label fw-bold mt-2 mb-0">Total Units:</label>
+            <input type="number" class="form-control" id="units" name="units" 
+                readonly value="{{ subject.units }}" min="0" max="3">
+        </div>
+    </div>
+    
+    <!-- Description -->
+    <div class="row g-3">
+      <div class="col-12">
+        <label for="description" class="form-label fw-bold mt-2 mb-0">Description:</label>
+        <textarea class="form-control" id="description" name="description" placeholder="Description" style="height: 100px;">{{ subject.description }}</textarea>
+      </div>
+    </div>
+    
+    <!-- Prerequisites (Select2 multi-select) -->
+    <div class="row g-3">
+      <div class="col-12">
+        <label for="prerequisites" class="form-label fw-bold mt-2 mb-0">Prerequisites:</label>
+        <select class="form-select" id="prerequisites" name="prerequisites" multiple required>
+          {% for subj in all_subjects %}
+            <option value="{{ subj.id }}" {% if subj in subject.prerequisites.all %}selected{% endif %}>{{ subj.code }} - {{ subj.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+    
+    <!-- Department & Program -->
+    {% if request.user.is_superuser %}
+      <!-- Admin: Use multiple select for Department and Program -->
+      <div class="row g-3" id="departmentRow">
+        <div class="col-12">
+          <label for="department" class="form-label fw-bold mt-2 mb-0">Department/s:</label>
+          <select class="form-select" id="department" name="departments" multiple required>
+            {% for dept in departments %}
+              <option value="{{ dept.id }}" {% if dept in subject.departments.all %}selected{% endif %}>{{ dept.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <div class="row g-3" id="programRow">
+        <div class="col-12">
+          <label for="program" class="form-label fw-bold mt-2 mb-0">Program/s:</label>
+          {% if request.user.role == "ADMIN" %}
+            <select class="form-select" id="program" name="programs" multiple required>
+              {% for prog in programs %}
+                <option value="{{ prog.id }}" {% if prog in subject.programs.all %}selected{% endif %}>{{ prog.name }}</option>
+              {% endfor %}
+            </select>
+          {% else %}
+            <input type="text" id="subject_type_display" class="form-control bg-secondary-subtle text-muted mt-0" value="{{ subject.subject_type }}" readonly>
+            <select class="form-select bg-secondary-subtle text-muted mt-0" id="program" name="programs" multiple disabled required>
+              {% for prog in programs %}
+                <option value="{{ prog.id }}" {% if prog in subject.programs.all %}selected{% endif %}>{{ prog.name }}</option>
+              {% endfor %}
+            </select>
+            {# Hidden inputs to ensure the selected programs are submitted #}
+            {% for prog in subject.programs.all %}
+              <input type="hidden" name="programs" value="{{ prog.id }}">
+            {% endfor %}
+          {% endif %}
+        </div>
+      </div>
+    {% else %}
+      <!-- Officer: Department is fixed; show single select for Program -->
+      <input type="hidden" name="departments" value="{{ fixed_department.id }}">
+      <div class="row g-3" id="programRow">
+        <div class="col-12">
+          <label for="program" class="form-label fw-bold mt-2 mb-0">Program</label>
+          <select class="form-select" id="program" name="programs" multiple required>
+            <option value="" disabled>Select program</option>
+            {% for prog in programs %}
+              <option value="{{ prog.id }}" {% if prog.id|stringformat:"s" == subject.programs.first.id|stringformat:"s" %}selected{% endif %}>{{ prog.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+    {% endif %}
+    
+    <div class="mt-4 d-flex justify-content-end gap-2">
+      <button type="submit" class="btn myPrimary text-white">Update Subject</button>
+      <a href="{% if request.META.HTTP_REFERER %}{{ request.META.HTTP_REFERER }}{% else %}{% url 'subject-management-list' %}{% endif %}" class="btn btn-outline-secondary">Cancel</a>
+    </div>
+  </form>
+</article>
+{% endblock body %}
+
+{% block script %}
+<script src="{% static "subjects/create_and_update_subject.js" %}"></script>
+
+<script>
+  {% if request.user.is_superuser %}
+  $('#department').select2({
+      placeholder: "Select department(s)",
+      width: '100%'
+  });
+  $('#program').select2({
+      placeholder: "Select program(s)",
+      width: '100%'
+  });
+{% else %}
+  $('#program').select2({
+      placeholder: "Select program",
+      width: '100%'
+  });
+  $('#program').prop("disabled", true);
+{% endif %}
+
+$('#prerequisites').select2({
+  placeholder: "Select prerequisites",
+  width: '100%'
+});
+</script>
+{% endblock script %}

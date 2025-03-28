@@ -1,0 +1,121 @@
+{% extends "home/layout.html" %}
+
+{% block style %}
+
+{% endblock style %}
+
+{% block body %}
+<h3 class="mb-3">Student Subject Checklist - <span class="text-primary">Student List</span></h3>
+<article class="content-section border rounded p-0 shadow-sm">
+    <div class="container">
+        <!-- Top Controls -->
+        <div class="row mt-2">
+            <div class="col-auto">
+                <select id="customEntries" class="form-select d-inline w-auto border-secondary fw-bold" 
+                        style="font-size: calc(0.8rem + 0.2vw); cursor: pointer; vertical-align: middle;">
+                    <option value="10">10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
+                <span class="d-inline ms-2" 
+                      style="font-size: calc(0.8rem + 0.2vw); vertical-align: middle;">Entries per page</span>
+            </div>
+            <div class="col-auto ms-auto">
+                <input type="text" id="searchBar" class="form-control d-inline w-auto border-secondary" 
+                       placeholder="Search..." 
+                       style="font-size: calc(0.8rem + 0.2vw); vertical-align: middle;">
+            </div>
+        </div>
+        <!-- Filter Section -->
+        <div class="row mt-2">
+            {% if request.user.role|lower == "admin" or request.user.is_superuser %}
+            <div class="col-auto">
+                <form method="get" class="d-inline">
+                    <label for="departmentFilter" class="fw-bold">Filter by Department:</label>
+                    <select id="departmentFilter" name="department" class="form-select d-inline w-auto" onchange="this.form.submit()">
+                        <option value="">All Departments</option>
+                        {% for dept in departments %}
+                            <option value="{{ dept.id }}" {% if selected_department == dept.id|stringformat:"s" %}selected{% endif %}>{{ dept.name }}</option>
+                        {% endfor %}
+                    </select>
+                </form>
+            </div>
+            <div class="col-auto">
+                <form method="get" class="d-inline">
+                    <label for="programFilter" class="fw-bold">Filter by Program:</label>
+                    <select id="programFilter" name="program" class="form-select d-inline w-auto" onchange="this.form.submit()">
+                        <option value="">All Programs</option>
+                        {% for prog in programs %}
+                            <option value="{{ prog.id }}" {% if selected_program == prog.id|stringformat:"s" %}selected{% endif %}>{{ prog.name }}</option>
+                        {% endfor %}
+                    </select>
+                </form>
+            </div>
+            {% else %}
+            <div class="col-auto">
+                <form method="get" class="d-inline">
+                    <label for="programFilter" class="fw-bold">Filter by Program:</label>
+                    <select id="programFilter" name="program" class="form-select d-inline w-auto" onchange="this.form.submit()">
+                        <option value="">All Programs</option>
+                        {% for prog in programs %}
+                            <option value="{{ prog.id }}" {% if selected_program == prog.id|stringformat:"s" %}selected{% endif %}>{{ prog.name }}</option>
+                        {% endfor %}
+                    </select>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    <!-- Student Table -->
+    <div class="table-responsive table-nowrap mt-2">
+        <table id="dataTable" class="table table-light table-hover table-striped text-center m-0 projectTables">
+            <thead class="table-dark">
+                <tr>
+                    <th class="text-center">Student Number</th>
+                    <th class="text-center">Name</th>
+                    {% if request.user.role|lower == "admin" or request.user.is_superuser %}
+                        <th class="text-center">Department</th>
+                    {% endif %}
+                    <th class="text-center">Program Taken</th>
+                    <th class="text-center">Options</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in student_profiles %}
+                    <tr>
+                        <td class="text-center">{{ student.student_id }}</td>
+                        <td>{{ student.user.last_name }}, {{ student.user.first_name }}</td>
+                        {% if request.user.role|lower == "admin" or request.user.is_superuser %}
+                        <td>{% if student.department %}{{ student.department.name }}{% else %}-{% endif %}</td>
+                        {% endif %}
+                        <td>{% if student.program %}{{ student.program.name }}{% else %}-{% endif %}</td>
+                        <td>
+                            <a href="{% url 'student-subject-checklist' student.student_id %}" class="btn btn-sm btn-outline-info fw-bold responsive_text flex-fill px-3" title="View student & Checklist">
+                                <i class="ri-user-line"></i>
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div id="customPagination"></div>
+    </div>
+</article>
+{% endblock body %}
+
+{% block script %}
+<script>
+  $('#myModal').on('show.bs.modal', function(event) {
+      var button = $(event.relatedTarget);
+      var deleteData = button.attr('data-deleteData');
+      var dataID = button.attr('data-ID');
+      var moduleName = button.attr('data-moduleName');
+      
+      var txtDeleteData = deleteData;
+      $(this).find('#deleteMessage').text('Are you sure you want to ' + moduleName + ' for:');
+      $(this).find('#txtDeleteData').text(txtDeleteData);
+      $(this).find('#btnDelete').attr('href', '{% url "account-delete-confirm" 0 %}'.replace('0', dataID));
+  });
+</script>
+{% endblock script %}
