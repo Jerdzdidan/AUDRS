@@ -1,0 +1,57 @@
+{% extends "home/layout.html" %}
+{% load static %}
+
+{% block style %}
+  <link rel="stylesheet" href="{% static 'studentRegistration/calendar.css' %}">
+  <style>
+   
+  </style>
+{% endblock style %}
+
+{% block body %}
+<h2 class="mb-4 text-start">Registration Calendar</h2>
+    <div id="calendar"></div>
+{% endblock body %}
+
+{% block script %}
+<script>
+  $(document).ready(function() {
+    var calendarEl = $('#calendar')[0];
+    var initialDate = {% if window %}"{{ window.start_date|date:'Y-m-d' }}"{% else %}null{% endif %};
+    var eventsArray = [];
+    {% if window %}
+        eventsArray.push({
+          title: 'Registration Open',
+          start: "{{ window.start_date|date:'Y-m-d' }}T{{ window.start_time|time:'H:i:s' }}",
+          end: "{{ window.end_date|date:'Y-m-d' }}T{{ window.end_time|time:'H:i:s' }}",
+        });
+    {% endif %}
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+      initialView: 'dayGridMonth',
+      initialDate: initialDate,
+      headerToolbar: {
+        left: 'prev,next today',
+        center: 'title',
+        right: 'dayGridMonth,timeGridWeek,timeGridDay'
+      },
+      events: eventsArray,
+      eventColor: '#004EA8',
+      eventTextColor: 'white',
+      eventDidMount: function(info) {
+          info.el.style.cursor = 'pointer';
+          info.el.style.borderLeft = '4px solid #2980b9';
+      },
+      eventTimeFormat: {
+        hour: 'numeric',
+        minute: '2-digit',
+        meridiem: 'short'
+      },
+      eventClick: function(info) {
+        window.location.href = "{% url 'open_registration_custom' %}";
+        info.jsEvent.preventDefault();
+      }
+    });
+    calendar.render();
+  });
+</script>
+{% endblock script %}

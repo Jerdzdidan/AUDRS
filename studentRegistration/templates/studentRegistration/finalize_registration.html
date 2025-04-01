@@ -1,0 +1,49 @@
+{% extends "home/layout.html" %}
+{% load static %}
+
+{% block style %}
+  <!-- Optional: link your custom stylesheet -->
+  <link rel="stylesheet" href="{% static 'studentRegistration/main.css' %}">
+  <style>
+    /* Custom styling for the drag-and-drop area */
+    #dropzone {
+      border: 2px dashed #007bff;
+      border-radius: 8px;
+      padding: 40px;
+      text-align: center;
+      color: #007bff;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    #dropzone.dragover {
+      background-color: #e9ecef;
+    }
+  </style>
+{% endblock style %}
+
+{% block body %}
+<div class="container">
+  <article class="content-section shadow-lg p-0">
+    <div class="container py-5">
+      <h2 class="mb-4 text-center text-primary">Finalize Registration</h2>
+      <p class="text-center">Drag and drop an image file (your final registration form) below or click to select a file.</p>
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div id="dropzone">
+          Drag & Drop image file here or click to select.
+          <input type="file" name="registration_form_image" id="registration_form_image" style="display: none;">
+        </div>
+        <div class="text-center mt-4">
+          <button type="submit" class="btn btn-primary btn-lg">Submit Registration Form</button>
+        </div>
+      </form>
+    </div>
+  </article>
+</div>
+{% endblock body %}
+
+{% block script %}
+
+<script> document.addEventListener('DOMContentLoaded', function() { const dropzone = document.getElementById('dropzone'); const fileInput = document.getElementById('registration_form_image'); const feedback = document.createElement('div'); feedback.className = 'mt-2 small'; dropzone.appendChild(feedback); ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => { dropzone.addEventListener(eventName, preventDefaults, false); document.body.addEventListener(eventName, preventDefaults, false); });  ['dragenter', 'dragover'].forEach(eventName => { dropzone.addEventListener(eventName, highlight, false); }); ['dragleave', 'drop'].forEach(eventName => { dropzone.addEventListener(eventName, unhighlight, false); }); dropzone.addEventListener('drop', handleDrop, false); addEventListener('click', () => fileInput.click());  fileInput.addEventListener('change', handleFileSelect); function preventDefaults (e) { e.preventDefault(); e.stopPropagation(); } function highlight(e) { dropzone.classList.add('dragover'); } function unhighlight(e) { dropzone.classList.remove('dragover'); } function handleDrop(e) { const dt = e.dataTransfer; const files = dt.files; handleFiles(files); } function handleFileSelect() { const files = this.files; handleFiles(files); } function handleFiles(files) { if (files.length > 0) { const file = files[0]; if (file.type.startsWith('image/')) { if (fileInput.files !== files) { const dataTransfer = new DataTransfer(); dataTransfer.items.add(file); fileInput.files = dataTransfer.files; } feedback.textContent = `Selected file: ${file.name}`; feedback.style.color = 'green'; } else { feedback.textContent = 'Please upload an image file (e.g., JPEG, PNG).'; feedback.style.color = 'red'; fileInput.value = ''; } } } }); </script>
+{% endblock script %}

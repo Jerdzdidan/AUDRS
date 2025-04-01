@@ -1,7 +1,7 @@
 $(document).ready(function() {
-    // ==================== minorSub DataTable ====================
-    const $minorSubDataTable = $('#minorSubDataTable').DataTable({
-        order: [0, 'asc'],
+    // ==================== pending DataTable ====================
+    const $pendingDataTable = $('#pendingDataTable').DataTable({
+        order: [6, 'asc'],
         layout: {
             topStart: null,
             topEnd: null,
@@ -14,21 +14,21 @@ $(document).ready(function() {
         }
     });
 
-    const $minorSubEntries = $('#minorSubCustomEntries');
-    const $minorSubSearch = $('#minorSubSearchBar');
-    const $minorSubPagination = $('#minorSubCustomPagination');
+    const $pendingEntries = $('#pendingCustomEntries');
+    const $pendingSearch = $('#pendingSearchBar');
+    const $pendingPagination = $('#pendingCustomPagination');
 
-    $minorSubEntries.on('change', function() {
-        $minorSubDataTable.page.len(parseInt(this.value, 10)).draw();
+    $pendingEntries.on('change', function() {
+        $pendingDataTable.page.len(parseInt(this.value, 10)).draw();
     });
 
-    $minorSubSearch.on('keyup', function() {
-        $minorSubDataTable.search(this.value).draw();
+    $pendingSearch.on('keyup', function() {
+        $pendingDataTable.search(this.value).draw();
     });
 
     // Pagination Function
-    function updateminorSubPagination() {
-        const info = $minorSubDataTable.page.info();
+    function updatependingPagination() {
+        const info = $pendingDataTable.page.info();
         let paginationHtml = '<ul class="pagination justify-content-start ms-2">';
         
         // Previous Button
@@ -53,16 +53,16 @@ $(document).ready(function() {
             </li>`;
         }
         
-        $minorSubPagination.html(paginationHtml + '</ul>');
+        $pendingPagination.html(paginationHtml + '</ul>');
     }
 
     // Stock Pagination Events
-    $minorSubDataTable.on('draw', updateminorSubPagination);
-    $minorSubPagination.on('click', 'a.page-link', function(e) {
+    $pendingDataTable.on('draw', updatependingPagination);
+    $pendingPagination.on('click', 'a.page-link', function(e) {
         e.preventDefault();
-        $minorSubDataTable.page(parseInt($(this).data('page'), 10)).draw('page');
+        $pendingDataTable.page(parseInt($(this).data('page'), 10)).draw('page');
     });
-    updateminorSubPagination();
+    updatependingPagination();
 
 
 });

@@ -1,0 +1,254 @@
+{% extends "home/layout.html" %}
+{% load static %}
+
+
+{% block style %}
+<style>
+    .form-control, .form-select {
+        width: 100% !important;
+    }
+    .status-indicator {
+        border-radius: 0.25rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+        display: inline-block;
+    }
+    .pending { background-color: #fff3cd; color: #856404; }
+    .complete { background-color: #d4edda; color: #155724; }
+    .info-section h4 {
+      border-bottom: 1px solid rgb(95, 95, 95);
+      padding-bottom: 0.5rem;
+    }
+    .info-section p, .info-section li {
+      margin-bottom: 0.5rem;
+    }   
+    .info-label {
+      font-weight: 600;
+      margin-bottom: 0.25rem;
+    }
+    .info-value {
+      padding: 0.375rem 0.75rem;
+      background-color: #e9ecef;
+      border-radius: 0.25rem;
+      margin-bottom: 1rem;
+      display: block;
+    }
+    .section-header {
+      margin-bottom: 1rem;
+      border-bottom: 1px solid rgb(0, 0, 0);
+      padding-bottom: 0.5rem;
+      font-size: 1.25rem;
+    }
+</style>
+<link rel="stylesheet" href="{% static 'studentRegistration/main.css' %}">
+{% endblock style %}
+
+{% block body %}
+<h3 class="mb-3">Student Registration - <span class="text-primary">{% if read_only %}Detail{% else %}Form{% endif %}</span></h3>
+  
+<article class="content-section border-secondary-subtle rounded p-3 shadow-lg">
+
+  <div class="container">
+      <div class="info-section">
+        <div class="section-header fw-bold mt-2">Student Information</div>
+        <div class="row">
+          <div class="col-md-6">
+            <p class="info-label fs-4">Student ID:</p>
+            <p class="info-value fs-5">{{ student_profile.student_id }}</p>
+          </div>
+          <div class="col-md-6">
+            <p class="info-label fs-4">Name:</p>
+            <p class="info-value fs-5">{{ student_profile.user.last_name }}, {{ student_profile.user.first_name }}</p>
+          </div>
+        </div>
+        <div class="row pt-3">
+          <div class="col-md-3">
+            <p class="info-label">Email:</p>
+            <p class="info-value">{{ student_profile.user.email }}</p>
+          </div>
+          <div class="col-md-3">
+            <p class="info-label">Year Level:</p>
+            <p class="info-value">{{ student_profile.year_level }}</p>
+          </div>
+          <div class="col-md-3">
+            <p class="info-label">Department:</p>
+            <p class="info-value">{{ student_profile.department.name }}</p>
+          </div>
+          <div class="col-md-3">
+            <p class="info-label">Program:</p>
+            <p class="info-value">{{ student_profile.program.name }}</p>
+          </div>
+        </div>
+      </div>
+
+    <div class="section-header fw-bold mt-3">Registration Form</div>
+
+    {% if read_only %}
+      <!-- Show Registration Status and Edit Button in Detail View -->
+      {% if registration.completed %}
+        <div class="status-indicator complete w-100 fs-2 text-center">Status: Complete</div>
+      {% else %}
+        <div class="status-indicator pending w-100 fs-2 text-center">Status: Pending</div>
+      {% endif %}
+    {% endif %}
+
+    <form method="post" class="needs-validation" novalidate>
+        {% csrf_token %}
+        <div class="row g-3">
+          <!-- Dynamic Preferred Section -->
+          <div class="col-md-4 offset-md-4">
+            <div class="form-floating mb-3">
+              <select class="form-select" id="preferred_section" name="preferred_section" required
+                {% if read_only %}disabled{% endif %}>
+                <option value="" {% if not registration.preferred_section %}selected{% endif %} disabled>Select Section</option>
+                {% for section in sections %}
+                  <option value="{{ section.id }}"
+                    {% if registration and registration.preferred_section == section.id %}selected{% endif %}>
+                    {{ section.name }}
+                  </option>
+                {% endfor %}
+              </select>
+              <label for="preferred_section">Preferred Section</label>
+            </div>
+          </div>
+        </div>
+        <!-- Time Range Fields -->
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="form-floating">
+                    <input type="text" class="form-control" id="preferred_time_start" name="preferred_time_start" placeholder="e.g., 08:00AM"
+                      value="{% if registration %}{{ registration.preferred_time_start|date:'h:iA' }}{% endif %}"
+                      {% if read_only %}disabled{% endif %} required>
+                    <label for="preferred_time_start">Preferred Start Time</label>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-floating">
+                    <input type="text" class="form-control" id="preferred_time_end" name="preferred_time_end" placeholder="e.g., 05:00PM"
+                      value="{% if registration %}{{ registration.preferred_time_end|date:'h:iA' }}{% endif %}"
+                      {% if read_only %}disabled{% endif %} required>
+                    <label for="preferred_time_end">Preferred End Time</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-3 mt-3">
+          <div class="col-md-6">
+            <label class="fw-bold">Priority #1 Minor Subject:</label>
+            <select class="form-select minor_subject_select" id="minor_priority_1" name="minor_priority_1" {% if read_only %}disabled{% endif %}>
+                <option value="">-- N/A --</option>
+                {% for subject in available_minor_subjects %}
+                    <option value="{{ subject.id }}" 
+                        {% if form_data.minor_priority_1 == subject.id|stringformat:"s" %}selected{% endif %}>
+                        {{ subject.name }} ({{ subject.code }})
+                    </option>
+                {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="fw-bold">Priority #2 Minor Subject:</label>
+            <select class="form-select minor_subject_select" id="minor_priority_2" name="minor_priority_2" {% if read_only %}disabled{% endif %}>
+                <option value="">-- N/A --</option>
+                {% for subject in available_minor_subjects %}
+                    <option value="{{ subject.id }}" 
+                        {% if form_data.minor_priority_2 == subject.id|stringformat:"s" %}selected{% endif %}>
+                        {{ subject.name }} ({{ subject.code }})
+                    </option>
+                {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="fw-bold">Priority #3 Minor Subject:</label>
+            <select class="form-select minor_subject_select" id="minor_priority_3" name="minor_priority_3" {% if read_only %}disabled{% endif %}>
+              <option value="">-- N/A --</option>
+                {% for subject in available_minor_subjects %}
+                    <option value="{{ subject.id }}" 
+                        {% if form_data.minor_priority_3 == subject.id|stringformat:"s" %}selected{% endif %}>
+                        {{ subject.name }} ({{ subject.code }})
+                    </option>
+                {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="fw-bold">Priority #4 Minor Subject:</label>
+            <select class="form-select minor_subject_select" id="minor_priority_4" name="minor_priority_4" {% if read_only %}disabled{% endif %}>
+                <option value="">-- N/A --</option>
+                {% for subject in available_minor_subjects %}
+                    <option value="{{ subject.id }}" 
+                        {% if form_data.minor_priority_4 == subject.id|stringformat:"s" %}selected{% endif %}>
+                        {{ subject.name }} ({{ subject.code }})
+                    </option>
+                {% endfor %}
+            </select>
+          </div>
+        </div>
+        <!-- Dynamic Preferred Class Days (Checkboxes) -->
+        <div class="mb-3 mt-4 text-center">
+          <label class="form-label fw-bold">Preferred Class Days:</label> <br>
+          <div class="btn-group" role="group" aria-label="Preferred Class Days">
+            {% for day in class_days %}
+              <input type="checkbox"
+                     class="btn-check"
+                     name="preferred_class_days"
+                     id="day{{ day }}"
+                     value="{{ day }}"
+                     autocomplete="off"
+                     {% if registration and day in registration.preferred_class_days %}checked{% endif %}
+                     {% if read_only %}disabled{% endif %}>
+              <label class="btn btn-outline-success border border-dark {% if read_only %}disabled{% endif %}" for="day{{ day }}">{{ day }}</label>
+            {% endfor %}
+          </div>
+        </div>
+        <!-- Additional Comments -->
+        <div class="row g-3">
+            <div class="col-12">
+                <div class="form-floating mb-3">
+                    <textarea class="form-control" id="additional_comments" name="additional_comments" rows="4" placeholder="Any additional information..."
+                      {% if read_only %}disabled{% endif %}>{% if registration %}{{ registration.additional_comments }}{% endif %}</textarea>
+                    <label for="additional_comments">Additional Comments</label>
+                </div>
+            </div>
+        </div>
+        {% if not read_only %}
+        <div class="mt-4 d-flex justify-content-end gap-2">
+            <button type="submit" class="btn myPrimary text-white">Submit Registration</button>
+            <a href="{% url 'student_registration_form' %}" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+        {% endif %}
+    </form>
+    {% if read_only %}
+      <div class="mb-3 text-end">
+          <a href="{% url 'student_registration_edit' %}" class="btn btn-success">Edit Registration</a>
+      </div>
+    {% endif %}
+  </div>
+</article>
+{% endblock body %}
+
+{% block script %}
+<script>
+  {% if not read_only %}
+  flatpickr("#preferred_time_start", {
+    enableTime: true,
+    noCalendar: true,
+    time_24hr: false,
+    dateFormat: "h:iK",
+    altInput: true,
+    altFormat: "h:iK"
+  });
+  
+  flatpickr("#preferred_time_end", {
+    enableTime: true,
+    noCalendar: true,
+    time_24hr: false,
+    dateFormat: "h:iK",
+    altInput: true,
+    altFormat: "h:iK"
+  });
+
+  $('.minor_subject_select').select2({
+    placeholder: "Select Minor Subject (Suggestion)"
+  })
+  {% endif %}
+</script>
+{% endblock script %}

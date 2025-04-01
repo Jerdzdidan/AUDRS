@@ -1,6 +1,6 @@
 $(document).ready(function() {
-    // ==================== firstYear DataTable ====================
-    const $firstYearDataTable = $('#firstYearDataTable').DataTable({
+    // ==================== secondYearCheckList DataTable ====================
+    const $secondYearCheckListDataTable = $('#secondYearCheckListDataTable').DataTable({
         order: [6, 'asc'],
         layout: {
             topStart: null,
@@ -14,21 +14,21 @@ $(document).ready(function() {
         }
     });
 
-    const $firstYearEntries = $('#firstYearCustomEntries');
-    const $firstYearSearch = $('#firstYearSearchBar');
-    const $firstYearPagination = $('#firstYearCustomPagination');
+    const $secondYearCheckListEntries = $('#secondYearCheckListCustomEntries');
+    const $secondYearCheckListSearch = $('#secondYearCheckListSearchBar');
+    const $secondYearCheckListPagination = $('#secondYearCheckListCustomPagination');
 
-    $firstYearEntries.on('change', function() {
-        $firstYearDataTable.page.len(parseInt(this.value, 10)).draw();
+    $secondYearCheckListEntries.on('change', function() {
+        $secondYearCheckListDataTable.page.len(parseInt(this.value, 10)).draw();
     });
 
-    $firstYearSearch.on('keyup', function() {
-        $firstYearDataTable.search(this.value).draw();
+    $secondYearCheckListSearch.on('keyup', function() {
+        $secondYearCheckListDataTable.search(this.value).draw();
     });
 
     // Pagination Function
-    function updatefirstYearPagination() {
-        const info = $firstYearDataTable.page.info();
+    function updatesecondYearCheckListPagination() {
+        const info = $secondYearCheckListDataTable.page.info();
         let paginationHtml = '<ul class="pagination justify-content-start ms-2">';
         
         // Previous Button
@@ -53,16 +53,16 @@ $(document).ready(function() {
             </li>`;
         }
         
-        $firstYearPagination.html(paginationHtml + '</ul>');
+        $secondYearCheckListPagination.html(paginationHtml + '</ul>');
     }
 
     // Stock Pagination Events
-    $firstYearDataTable.on('draw', updatefirstYearPagination);
-    $firstYearPagination.on('click', 'a.page-link', function(e) {
+    $secondYearCheckListDataTable.on('draw', updatesecondYearCheckListPagination);
+    $secondYearCheckListPagination.on('click', 'a.page-link', function(e) {
         e.preventDefault();
-        $firstYearDataTable.page(parseInt($(this).data('page'), 10)).draw('page');
+        $secondYearCheckListDataTable.page(parseInt($(this).data('page'), 10)).draw('page');
     });
-    updatefirstYearPagination();
+    updatesecondYearCheckListPagination();
 
 
 });

@@ -132,14 +132,19 @@
             
             <div class="col-md-4">
                 <div class="form-floating mb-3">
-                    <select class="form-select" id="program" name="program" required>
-                        <option value="" selected disabled>Select program</option>
-                        {% for prog in programs %}
-                            <option value="{{ prog.id }}" {% if profile.program.id == prog.id %}selected{% endif %}>
-                                {{ prog.name }}
-                            </option>
-                        {% endfor %}
-                    </select>
+                    {% if request.user.is_superuser or request.user.role == "ADMIN" or request.user.role == "OFFICER" %}
+                        <select class="form-select" id="program" name="program" required>
+                            <option value="" selected disabled>Select program</option>
+                            {% for prog in programs %}
+                                <option value="{{ prog.id }}" {% if profile.program.id == prog.id %}selected{% endif %}>
+                                    {{ prog.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    {% else %}
+                        <input type="text" class="form-control readonly-field" value="{{ profile.program.name }}" readonly>
+                        <input type="hidden" name="program" value="{{ profile.program.id }}">
+                    {% endif %}
                     <label for="program">Program</label>
                 </div>
             </div>

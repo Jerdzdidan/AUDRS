@@ -18,21 +18,67 @@
             </li>
         </a>
         </ul>
+        
+        <!-- Registration Management -->
+        {% if request.user.role == "ADMIN" %}
         <ul class="list-group my-1">
-            <a href="#" class="nav-link rounded">
-            <li class="list-group-item d-flex align-items-center menu-item">
-                <i class="ri-dashboard-fill me-1 menu-icons"></i>Dashboard
-            </li>
+            <a href="{% url "open_registration_custom" %}" class="nav-link rounded">
+                <li class="list-group-item d-flex align-items-center menu-item">
+                    <i class="ri-calendar-event-fill me-1 menu-icons"></i>Open Registration
+                </li>
+            </a>
+        </ul>
+        {% endif %}
+        
+        {% if request.user.role in "[OFFICER,ADMIN]" %}
+        <ul class="list-group my-1">
+            <a href="{% url "registration_calendar" %}" class="nav-link rounded">
+                <li class="list-group-item d-flex align-items-center menu-item">
+                    <i class="ri-calendar-fill me-1 menu-icons"></i>Registration Calendar
+                </li>
             </a>
         </ul>
         <ul class="list-group my-1">
-            <a href="{% url "student-subject-studentlist" %}" class="nav-link rounded">
-            <li class="list-group-item d-flex align-items-center menu-item">
-                <i class="ri-git-repository-fill me-1 menu-icons"></i>
-                Student-Subject-Checklist
-            </li>
+            <a href="{% url "student_registration_queue" %}" class="nav-link rounded">
+                <li class="list-group-item d-flex align-items-center menu-item">
+                    <i class="ri-list-check-3 me-1 menu-icons"></i>Registration Queue
+                </li>
             </a>
         </ul>
+        {% endif %}
+        
+        {% if request.user.role in "[STUDENT]" %}
+        <ul class="list-group my-1">
+            <a href="{% url "student_registration_form" %}" class="nav-link rounded {% if '/registration-detail-student/' in request.path or '/registration-edit/' in request.path or '/registration-form/' in request.path %}active{% endif %}">
+                <li class="list-group-item d-flex align-items-center menu-item">
+                    <i class="ri-file-list-3-fill me-1 menu-icons"></i>Registration Form
+                </li>
+            </a>
+        </ul>
+        {% endif %}
+        
+        <!-- Student Subject Checklist -->
+        {% if request.user.role in "[OFFICER,ADMIN]" %}
+            <ul class="list-group my-1">
+                <a href="{% url "student-subject-studentlist" %}" class="nav-link rounded">
+                <li class="list-group-item d-flex align-items-center menu-item">
+                    <i class="ri-git-repository-fill me-1 menu-icons"></i>
+                    Student-Subject-Checklist
+                </li>
+                </a>
+            </ul>
+        {% else %}
+            <ul class="list-group my-1">
+                <a href="{% url "student-subject-checklist" request.user.studentprofile.student_id %}" class="nav-link rounded">
+                <li class="list-group-item d-flex align-items-center menu-item">
+                    <i class="ri-git-repository-fill me-1 menu-icons"></i>
+                    Subject-Checklist
+                </li>
+                </a>
+            </ul>
+        {% endif %}
+        
+        <!-- Subject Management -->
         {% if request.user.role in "[OFFICER,ADMIN]" %}
         <ul class="list-group my-1">
             <a class="nav-link rounded accounts-nav-toggle {% if '/subjects/' in request.path %}active{% endif %}" href="#" id="subjectManagementToggle">
@@ -66,47 +112,7 @@
             </div>
         </ul>
         {% endif %}
-        {% if request.user.role in "[OFFICER,ADMIN]" %}
-        <ul class="list-group my-1">
-            <a class="nav-link rounded accounts-nav-toggle {% if '/accounts/' in request.path %}active{% endif %}" href="#" id="accountsToggle">
-            <li class="list-group-item d-flex align-items-center menu-item">
-                <i class="ri-account-box-2-fill me-1 menu-icons"></i>
-                <span>Accounts-Management</span>
-                <i class="ri-arrow-down-s-line ms-auto"></i>
-            </li>
-            </a>
-            <div class="collapse {% if '/accounts/' in request.path %}show{% endif %}" id="accountsDropdown">
-                <a href="{% url "student-list" %}" class="nav-link rounded accounts-nav-item {% if '/student-list/' in request.path %}active{% endif %}">
-                    <li class="list-group-item d-flex align-items-center menu-item">
-                    <i class="fa-solid fa-user-graduate me-1 menu-icons"></i>
-                        Student Accounts
-                    </li>
-                </a>
-                {% if request.user.role in "[SUPERUSER,ADMIN]" %}
-                <a href="{% url "officer-list" %}" class="nav-link rounded accounts-nav-item {% if '/officer-list/' in request.path %}active{% endif %}">
-                    <li class="list-group-item d-flex align-items-center menu-item">
-                        <i class="ri-graduation-cap-fill me-1 menu-icons"></i>
-                        Officer Accounts
-                    </li>
-                </a>
-                {% endif %}
-                {% if request.user.role in "[ADMIN]" %}
-                    <a href="{% url "admin-list" %}" class="nav-link rounded accounts-nav-item {% if '/admin-list/' in request.path %}active{% endif %}">
-                        <li class="list-group-item d-flex align-items-center menu-item">
-                            <i class="ri-user-star-fill me-1 menu-icons"></i>
-                            Admin Accounts
-                        </li>
-                    </a>
-                {% endif %}
-                <a href="{% url "create-user" %}" class="nav-link rounded accounts-nav-item {% if '/create-user/' in request.path %}active{% endif %}">
-                    <li class="list-group-item d-flex align-items-center menu-item">
-                        <i class="ri-user-add-fill me-1 menu-icons"></i>
-                        Create Account
-                    </li>
-                </a>
-            </div>
-        </ul>
-        {% endif %}
+        
         <ul class="list-group my-1">
             {% url "account-update" request.user.id as update_url %}
             <a href="{{ update_url }}" class="nav-link {% if request.path == update_url %}active{% endif %} rounded">

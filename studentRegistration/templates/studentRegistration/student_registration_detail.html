@@ -1,0 +1,223 @@
+{% extends "home/layout.html" %}
+{% load static %}
+
+{% block style %}
+  <link rel="stylesheet" href="{% static 'studentSubjectCheckList/main.css' %}">
+  <style>
+    /* If you need to tweak spacing for the registration info */
+    .registration-info {
+      margin-top: 2rem;
+    }
+    .proceed-btn {
+      margin-top: 2rem;
+    }
+  </style>
+{% endblock style %}
+
+{% block body %}
+<div class="container">
+  <div class="d-flex justify-content-between border-bottom align-items-center">
+    {% if request.user.role != "STUDENT" %}
+      <h3>Student Subject Checklist - <span class="text-primary">Student Number: {{ student_profile.student_id }}</span></h3>
+    {% else %}
+      <h3>Subject - <span class="text-primary">CheckList</span></h3>
+    {% endif %}
+  </div>
+
+  <!-- Nav tabs -->
+  <div class="d-flex align-items-center mt-4">
+    <ul class="nav nav-tabs flex-grow-1" id="subjectTabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active fw-bold" id="studentProfile-tab" data-bs-toggle="tab" data-bs-target="#studentProfile" type="button" role="tab" aria-controls="studentProfile" aria-selected="true">Student Profile</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link fw-bold" id="firstYearCheckList-tab" data-bs-toggle="tab" data-bs-target="#firstYearCheckList" type="button" role="tab" aria-controls="firstYearCheckList" aria-selected="false">1st Yr.</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link fw-bold" id="secondYearCheckList-tab" data-bs-toggle="tab" data-bs-target="#secondYearCheckList" type="button" role="tab" aria-controls="secondYearCheckList" aria-selected="false">2nd Yr.</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link fw-bold" id="thirdYearCheckList-tab" data-bs-toggle="tab" data-bs-target="#thirdYearCheckList" type="button" role="tab" aria-controls="thirdYearCheckList" aria-selected="false">3rd Yr.</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link fw-bold" id="fourthYearCheckList-tab" data-bs-toggle="tab" data-bs-target="#fourthYearCheckList" type="button" role="tab" aria-controls="fourthYearCheckList" aria-selected="false">4th Yr.</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link fw-bold" id="minorSubCheckList-tab" data-bs-toggle="tab" data-bs-target="#minorSubCheckList" type="button" role="tab" aria-controls="minorSubCheckList" aria-selected="false">MINOR SUBS</button>
+      </li>
+    </ul>
+    {% if request.user.role != "STUDENT" %}
+    <a href="{% url 'student-subject-studentlist' %}" class="btn btn-secondary close-tab ms-3">
+      <i class="fa-solid fa-xmark fw-bold"></i>
+    </a>
+    {% endif %}
+  </div>  
+  
+  <!-- Tab content -->
+  <article class="tab-content content-section shadow-lg p-0" id="subjectTabsContent">
+    <!-- Student Profile Tab -->
+    <div class="tab-pane fade show active" id="studentProfile" role="tabpanel" aria-labelledby="studentProfile-tab">
+      <div class="container px-3 pt-3 pb-3">
+        <div class="info-section">
+          <div class="section-header fw-bold">Student Information</div>
+          <div class="row">
+            <div class="col-md-6">
+              <p class="info-label fs-4">Student ID:</p>
+              <p class="info-value fs-5">{{ student_profile.student_id }}</p>
+            </div>
+            <div class="col-md-6">
+              <p class="info-label fs-4">Name:</p>
+              <p class="info-value fs-5">{{ student_profile.user.last_name }}, {{ student_profile.user.first_name }}</p>
+            </div>
+          </div>
+          <div class="row pt-3">
+            <div class="col-md-3">
+              <p class="info-label">Email:</p>
+              <p class="info-value">{{ student_profile.user.email }}</p>
+            </div>
+            <div class="col-md-3">
+              <p class="info-label">Year Level:</p>
+              <p class="info-value">{{ student_profile.year_level }}</p>
+            </div>
+            <div class="col-md-3">
+              <p class="info-label">Department:</p>
+              <p class="info-value">{{ student_profile.department.name }}</p>
+            </div>
+            <div class="col-md-3">
+              <p class="info-label">Program:</p>
+              <p class="info-value">{{ student_profile.program.name }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="info-section registration-info mt-4">
+          <div class="section-header fw-bold">Registration Information</div>
+          <div class="row">
+            <div class="col-md-12 text-center">
+              <p class="info-label">Preferred Section:</p>
+              <p class="info-value d-inline w-auto px-5">{{ registration.preferred_section }}</p>
+            </div>
+          </div>
+          <div class="row mt-3">
+            <div class="col-md-6">
+              <p class="info-label">Preferred Start Time:</p>
+              <p class="info-value">{{ registration.preferred_time_start|date:'h:iA' }}</p>
+            </div>
+            <div class="col-md-6">
+              <p class="info-label">Preferred End Time:</p>
+              <p class="info-value">{{ registration.preferred_time_end|date:'h:iA' }}</p>
+            </div>
+          </div>
+          <div class="row g-3 mt-3">
+            <p class="info-label text-center fs-5 mb-0">Preferred Minor Subjects</p>
+            <div class="col-md-6">
+              <p class="info-label">Priority #1 Minor Subject:</p>
+              <p class="info-value">
+                {% if minor_choices|length > 0 %}
+                  {{ minor_choices.0.code }} - {{ minor_choices.0.name }}
+                {% else %}
+                  -- N/A --
+                {% endif %}
+              </p>
+            </div>
+            <div class="col-md-6">
+              <p class="info-label">Priority #2 Minor Subject:</p>
+              <p class="info-value">
+                {% if minor_choices|length > 1 %}
+                  {{ minor_choices.1.code }} - {{ minor_choices.1.name }}
+                {% else %}
+                  -- N/A --
+                {% endif %}
+              </p>
+            </div>
+            <div class="col-md-6">
+              <p class="info-label">Priority #3 Minor Subject:</p>
+              <p class="info-value">
+                {% if minor_choices|length > 2 %}
+                  {{ minor_choices.2.code }} - {{ minor_choices.2.name }}
+                {% else %}
+                  -- N/A --
+                {% endif %}
+              </p>
+            </div>
+            <div class="col-md-6">
+              <p class="info-label">Priority #4 Minor Subject:</p>
+              <p class="info-value">
+                {% if minor_choices|length > 3 %}
+                  {{ minor_choices.3.code }} - {{ minor_choices.3.name }}
+                {% else %}
+                  -- N/A --
+                {% endif %}
+              </p>
+            </div>
+          </div>
+          <div class="row pt-3">
+            <div class="col-md-12 text-center">
+              <label class="form-label fw-bold fs-5">Preferred Class Days:</label> <br>
+              <div class="d-inline">
+                <div class="btn-group" role="group" aria-label="Preferred Class Days">
+                {% for day in all_days %}
+                  <label class="btn {% if registration and day in registration.preferred_class_days %}btn-success border border-dark{% else %}btn-outline-success border border-dark{% endif %}" for="day{{ day }}">
+                    {{ day }}
+                  </label>
+                {% endfor %}
+                </div>
+              </div>
+            </div>
+          </div>
+          {% if registration.additional_comments %}
+          <div class="row pt-3 mt-3">
+            <div class="col-12">
+              <p class="info-label">Additional Comments:</p>
+              <p class="info-value">{{ registration.additional_comments }}</p>
+            </div>
+          </div>
+          {% endif %}
+          <div class="row mt-3">
+            <div class="col-md-6">
+              <p class="info-label">Submitted On:</p>
+              <p class="info-value">{{ registration.registration_date|date:"M d, Y H:i A" }}</p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- The other tab content for subject checklists are included below -->
+    {% include "studentSubjectCheckList/subject_list_tabs/firstYearSubjects.html" %}
+    {% include "studentSubjectCheckList/subject_list_tabs/secondYearSubjects.html" %}
+    {% include "studentSubjectCheckList/subject_list_tabs/thirdYearSubjects.html" %}
+    {% include "studentSubjectCheckList/subject_list_tabs/fourthYearSubjects.html" %}
+    {% include "studentSubjectCheckList/subject_list_tabs/minorSubjects.html" %}
+  </article>
+  {% if request.user.role != "STUDENT" %}
+  <div class="proceed-btn text-end mt-4 mb-4">
+    <a href="{% url 'finalize_registration' student_profile.student_id %}" class="btn btn-success btn-lg">Proceed to Finalize Registration</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock body %}
+
+{% block script %}
+  <script src="{% static 'studentSubjectCheckList/firstYearDataTables.js' %}"></script>
+  <script src="{% static 'studentSubjectCheckList/secondYearDataTables.js' %}"></script>
+  <script src="{% static 'studentSubjectCheckList/thirdYearDataTables.js' %}"></script>
+  <script src="{% static 'studentSubjectCheckList/fourthYearDataTables.js' %}"></script>
+  <script src="{% static 'studentSubjectCheckList/minorSubjectsDataTables.js' %}"></script>
+
+  <script>
+    $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function(e) {
+      localStorage.setItem('activeTab', $(e.target).attr('data-bs-target'));
+    });
+    var activeTab = localStorage.getItem('activeTab');
+    if(activeTab) {
+      var someTabTriggerEl = document.querySelector('button[data-bs-target="' + activeTab + '"]');
+      if(someTabTriggerEl) {
+        var tab = new bootstrap.Tab(someTabTriggerEl);
+        tab.show();
+      }
+    }
+  </script>
+{% endblock script %}

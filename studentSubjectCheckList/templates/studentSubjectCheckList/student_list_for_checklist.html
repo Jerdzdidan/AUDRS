@@ -8,32 +8,13 @@
 <h3 class="mb-3">Student Subject Checklist - <span class="text-primary">Student List</span></h3>
 <article class="content-section border rounded p-0 shadow-sm">
     <div class="container">
-        <!-- Top Controls -->
-        <div class="row mt-2">
-            <div class="col-auto">
-                <select id="customEntries" class="form-select d-inline w-auto border-secondary fw-bold" 
-                        style="font-size: calc(0.8rem + 0.2vw); cursor: pointer; vertical-align: middle;">
-                    <option value="10">10</option>
-                    <option value="25">25</option>
-                    <option value="50">50</option>
-                    <option value="100">100</option>
-                </select>
-                <span class="d-inline ms-2" 
-                      style="font-size: calc(0.8rem + 0.2vw); vertical-align: middle;">Entries per page</span>
-            </div>
-            <div class="col-auto ms-auto">
-                <input type="text" id="searchBar" class="form-control d-inline w-auto border-secondary" 
-                       placeholder="Search..." 
-                       style="font-size: calc(0.8rem + 0.2vw); vertical-align: middle;">
-            </div>
-        </div>
-        <!-- Filter Section -->
-        <div class="row mt-2">
+         <!-- Filter Section -->
+         <div class="row mt-2">
             {% if request.user.role|lower == "admin" or request.user.is_superuser %}
             <div class="col-auto">
                 <form method="get" class="d-inline">
-                    <label for="departmentFilter" class="fw-bold">Filter by Department:</label>
-                    <select id="departmentFilter" name="department" class="form-select d-inline w-auto" onchange="this.form.submit()">
+                    <label for="departmentFilter" class="fw-bold">Department:</label>
+                    <select id="departmentFilter" name="department" class="form-select w-auto" onchange="this.form.submit()">
                         <option value="">All Departments</option>
                         {% for dept in departments %}
                             <option value="{{ dept.id }}" {% if selected_department == dept.id|stringformat:"s" %}selected{% endif %}>{{ dept.name }}</option>
@@ -43,8 +24,8 @@
             </div>
             <div class="col-auto">
                 <form method="get" class="d-inline">
-                    <label for="programFilter" class="fw-bold">Filter by Program:</label>
-                    <select id="programFilter" name="program" class="form-select d-inline w-auto" onchange="this.form.submit()">
+                    <label for="programFilter" class="fw-bold">Program:</label>
+                    <select id="programFilter" name="program" class="form-select w-auto" onchange="this.form.submit()">
                         <option value="">All Programs</option>
                         {% for prog in programs %}
                             <option value="{{ prog.id }}" {% if selected_program == prog.id|stringformat:"s" %}selected{% endif %}>{{ prog.name }}</option>
@@ -66,6 +47,26 @@
             </div>
             {% endif %}
         </div>
+        <!-- Top Controls -->
+        <div class="row mt-2">
+            <div class="col-auto">
+                <select id="customEntries" class="form-select d-inline w-auto border-secondary fw-bold" 
+                        style="font-size: calc(0.8rem + 0.2vw); cursor: pointer; vertical-align: middle;">
+                    <option value="10">10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
+                <span class="d-inline ms-2" 
+                      style="font-size: calc(0.8rem + 0.2vw); vertical-align: middle;">Entries per page</span>
+            </div>
+            <div class="col-auto ms-auto">
+                <input type="text" id="searchBar" class="form-control d-inline w-auto border-secondary" 
+                       placeholder="Search..." 
+                       style="font-size: calc(0.8rem + 0.2vw); vertical-align: middle;">
+            </div>
+        </div>
+       
     </div>
     <!-- Student Table -->
     <div class="table-responsive table-nowrap mt-2">
@@ -91,8 +92,9 @@
                         {% endif %}
                         <td>{% if student.program %}{{ student.program.name }}{% else %}-{% endif %}</td>
                         <td>
-                            <a href="{% url 'student-subject-checklist' student.student_id %}" class="btn btn-sm btn-outline-info fw-bold responsive_text flex-fill px-3" title="View student & Checklist">
+                            <a href="{% url 'student-subject-checklist' student.student_id %}" class="btn btn-sm btn-outline-success fw-bold responsive_text flex-fill px-3" title="View student & Checklist">
                                 <i class="ri-user-line"></i>
+                                <i class="ri-git-repository-fill"></i>
                             </a>
                         </td>
                     </tr>
@@ -106,16 +108,20 @@
 
 {% block script %}
 <script>
-  $('#myModal').on('show.bs.modal', function(event) {
-      var button = $(event.relatedTarget);
-      var deleteData = button.attr('data-deleteData');
-      var dataID = button.attr('data-ID');
-      var moduleName = button.attr('data-moduleName');
-      
-      var txtDeleteData = deleteData;
-      $(this).find('#deleteMessage').text('Are you sure you want to ' + moduleName + ' for:');
-      $(this).find('#txtDeleteData').text(txtDeleteData);
-      $(this).find('#btnDelete').attr('href', '{% url "account-delete-confirm" 0 %}'.replace('0', dataID));
-  });
+    $('#programFilter').select2();
+    $('#departmentFilter').select2();
+
+
+    $('#myModal').on('show.bs.modal', function(event) {
+        var button = $(event.relatedTarget);
+        var deleteData = button.attr('data-deleteData');
+        var dataID = button.attr('data-ID');
+        var moduleName = button.attr('data-moduleName');
+        
+        var txtDeleteData = deleteData;
+        $(this).find('#deleteMessage').text('Are you sure you want to ' + moduleName + ' for:');
+        $(this).find('#txtDeleteData').text(txtDeleteData);
+        $(this).find('#btnDelete').attr('href', '{% url "account-delete-confirm" 0 %}'.replace('0', dataID));
+    });
 </script>
 {% endblock script %}

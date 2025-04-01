@@ -1,0 +1,98 @@
+{% extends "home/layout.html" %}
+{% load static %}
+
+{% block style %}
+  <link rel="stylesheet" href="{% static 'studentRegistration/main.css' %}">
+{% endblock style %}
+
+{% block body %}
+<div class="container">
+  <div class="d-flex justify-content-between border-bottom align-items-center">
+    <h3>Student Registration - <span class="text-primary">Queue</span></h3>
+  </div>
+
+  <!-- Filter Section -->
+  <div class="row mt-2">
+    {% if request.user.role|lower == "admin" or request.user.is_superuser %}
+    <div class="col-auto">
+        <form method="get" class="d-inline">
+            <label for="departmentFilter" class="fw-bold">Department:</label>
+            <select id="departmentFilter" name="department" class="form-select w-auto" onchange="this.form.submit()">
+                <option value="">All Departments</option>
+                {% for dept in departments %}
+                    <option value="{{ dept.id }}" {% if selected_department == dept.id|stringformat:"s" %}selected{% endif %}>{{ dept.name }}</option>
+                {% endfor %}
+            </select>
+        </form>
+    </div>
+    <div class="col-auto">
+        <form method="get" class="d-inline">
+            <label for="programFilter" class="fw-bold">Program:</label>
+            <select id="programFilter" name="program" class="form-select w-auto" onchange="this.form.submit()">
+                <option value="">All Programs</option>
+                {% for prog in programs %}
+                    <option value="{{ prog.id }}" {% if selected_program == prog.id|stringformat:"s" %}selected{% endif %}>{{ prog.name }}</option>
+                {% endfor %}
+            </select>
+        </form>
+    </div>
+    {% else %}
+    <div class="col-auto">
+        <form method="get" class="d-inline">
+            <label for="programFilter" class="fw-bold">Filter by Program:</label>
+            <select id="programFilter" name="program" class="form-select d-inline w-auto" onchange="this.form.submit()">
+                <option value="">All Programs</option>
+                {% for prog in programs %}
+                    <option value="{{ prog.id }}" {% if selected_program == prog.id|stringformat:"s" %}selected{% endif %}>{{ prog.name }}</option>
+                {% endfor %}
+            </select>
+        </form>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Nav tabs -->
+  <div class="d-flex align-items-center mt-4">
+    <ul class="nav nav-tabs flex-grow-1" id="studentRegistrationTabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active fw-bold" id="pending-tab" data-bs-toggle="tab" data-bs-target="#pending" type="button" role="tab" aria-controls="pending" aria-selected="true">PENDING</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link fw-bold" id="complete-tab" data-bs-toggle="tab" data-bs-target="#complete" type="button" role="tab" aria-controls="complete" aria-selected="false">COMPLETE</button>
+      </li>
+    </ul>
+  </div>  
+  
+
+ <!-- Tab content -->
+<article class="tab-content content-section shadow-lg p-0" id="studentRegistrationTabsContent">
+  {% include 'studentRegistration/student_registration_queue_tabs/pending.html' %}
+  {% include "studentRegistration/student_registration_queue_tabs/complete.html" %}
+</article> 
+
+</div>
+{% endblock body %}
+
+{% block script %}
+<script src="{% static 'studentRegistration/student_registration_queue_tabs/pending.js' %}"></script>
+<script src="{% static 'studentRegistration/student_registration_queue_tabs/complete.js' %}"></script>
+
+  <script>
+    $('#programFilter').select2();
+    $('#departmentFilter').select2();
+
+    $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function(e) {
+      localStorage.setItem('activeTab', $(e.target).attr('data-bs-target'));
+    });
+    var activeTab = localStorage.getItem('activeTab');
+    if(activeTab) {
+      var someTabTriggerEl = document.querySelector('button[data-bs-target="' + activeTab + '"]');
+      if(someTabTriggerEl) {
+        var tab = new bootstrap.Tab(someTabTriggerEl);
+        tab.show();
+      }
+    }
+
+  </script>
+  
+{% endblock script %}

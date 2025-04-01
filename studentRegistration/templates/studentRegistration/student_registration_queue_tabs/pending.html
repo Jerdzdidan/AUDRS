@@ -1,0 +1,57 @@
+  <!-- Pending Tab -->
+  <div class="tab-pane fade show active" id="pending" role="tabpanel" aria-labelledby="pending-tab">
+    <div class="container px-3 pt-3">
+      <div class="section-header fw-bold">Pending Registrations</div>
+
+      <!-- Entries and Search Bar -->
+      <div class="d-flex justify-content-between align-items-center mt-2 mb-2">
+        <div>
+          <select id="pendingCustomEntries" class="form-select d-inline w-auto border-secondary fw-bold" style="font-size: calc(0.8rem + 0.2vw); cursor: pointer;">
+            <option value="10">10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+            <option value="100">100</option>
+          </select>
+          <span class="ms-2">Entries per page</span>
+        </div>
+        <div>
+          <input type="text" id="pendingSearchBar" class="form-control d-inline w-auto border-secondary" placeholder="Search..." style="font-size: calc(0.8rem + 0.2vw);">
+        </div>
+      </div>
+    </div>
+
+    <!-- First Year Subjects Table -->
+    <div class="table-responsive">
+      <table class="table table-hover align-middle projectTables" id="pendingDataTable">
+        <thead class="table-dark">
+          <tr>
+            <th class="text-start">Student Number</th>
+            <th>Student Name</th>
+            {% if request.user.role == 'ADMIN' %}
+            <th>Department</th>
+            {% endif %}
+            <th>Program</th>
+            <th>Submitted On</th>
+            <th class="text-center">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for reg in pending_regs %}
+          <tr>
+            <td class="text-start align-middle"><span class="myPrimary rounded fw-bold text-white p-2">{{ reg.student.student_id }}</span></td>
+            <td class="align-middle">{{ reg.student.user.last_name }}, {{ reg.student.user.first_name }}</td>
+            {% if request.user.role == 'ADMIN' %}
+            <td class="align-middle">{{ reg.student.department.name }}</td>
+            {% endif %}
+            <td class="align-middle">{{ reg.student.program.name }}</td>
+            <td class="align-middle">{{ reg.registration_date|date:"M. d, Y - H:i A" }}</td>
+            <td class="text-center align-middle">
+              <a href="{% url 'student_registration_detail' reg.student.student_id %}" class="btn btn-success btn-sm fw-bold">Review</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <div id="pendingCustomPagination"></div>
+  </div> 

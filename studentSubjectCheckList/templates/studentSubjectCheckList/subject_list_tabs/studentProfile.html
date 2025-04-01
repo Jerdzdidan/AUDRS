@@ -1,7 +1,36 @@
-<!-- Studentprofile Subjects Checklist Tab -->
-<div class="tab-pane fade show active" id="studentprofile" role="tabpanel" aria-labelledby="studentprofile-tab">
-    <div class="container px-3 pt-3">
-      
+<!-- Student Profile Tab -->
+  <div class="tab-pane fade show active" id="studentProfile" role="tabpanel" aria-labelledby="studentProfile-tab">
+    <div class="container px-3 pt-3 pb-3">
+      <div class="info-section">
+        <div class="section-header fw-bold">Student Information</div>
+        <div class="row">
+          <div class="col-md-6">
+            <p class="info-label fs-4">Student ID:</p>
+            <p class="info-value fs-5">{{ student_profile.student_id }}</p>
+          </div>
+          <div class="col-md-6">
+            <p class="info-label fs-4">Name:</p>
+            <p class="info-value fs-5">{{ student_profile.user.last_name }}, {{ student_profile.user.first_name }}</p>
+          </div>
+        </div>
+        <div class="row pt-3">
+          <div class="col-md-3">
+            <p class="info-label">Email:</p>
+            <p class="info-value">{{ student_profile.user.email }}</p>
+          </div>
+          <div class="col-md-3">
+            <p class="info-label">Year Level:</p>
+            <p class="info-value">{{ student_profile.year_level }}</p>
+          </div>
+          <div class="col-md-3">
+            <p class="info-label">Department:</p>
+            <p class="info-value">{{ student_profile.department.name }}</p>
+          </div>
+          <div class="col-md-3">
+            <p class="info-label">Program:</p>
+            <p class="info-value">{{ student_profile.program.name }}</p>
+          </div>
+        </div>
+      </div>
     </div>
-</div>
-  
+  </div> 

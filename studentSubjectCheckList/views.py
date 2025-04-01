@@ -4,12 +4,11 @@ from subjects.models import Subject
 from .models import StudentSubjectChecklist
 from accounts.decorators import role_required
 from accounts.models import StudentProfile, EnrollmentOfficerProfile, Department, Program
+from django.contrib import messages
 
 @login_required
 def student_list_for_checklist(request):
-    # Determine if the logged-in user is an admin or officer.
     if request.user.role.upper() == "ADMIN" or request.user.is_superuser:
-        # For admins, get all student profiles
         student_profiles = StudentProfile.objects.all()
         department_filter = request.GET.get('department')
         program_filter = request.GET.get('program')
@@ -24,14 +23,13 @@ def student_list_for_checklist(request):
         selected_department = department_filter
         selected_program = program_filter
     else:
-        # For officers, only show students in their department
         officer_profile = get_object_or_404(EnrollmentOfficerProfile, user=request.user)
         student_profiles = StudentProfile.objects.filter(department=officer_profile.department)
         program_filter = request.GET.get('program')
         if program_filter:
             student_profiles = student_profiles.filter(program__id=program_filter)
         
-        departments = None  # Not used for officers
+        departments = None 
         programs = officer_profile.department.programs.all()
         selected_department = None
         selected_program = program_filter
@@ -48,7 +46,6 @@ def student_list_for_checklist(request):
 
 @login_required
 def subject_checklist(request, student_id):
-    student_id = student_id
     student_profile = get_object_or_404(StudentProfile, student_id=student_id)
     
     major_subjects = Subject.objects.filter(
@@ -58,10 +55,10 @@ def subject_checklist(request, student_id):
         programs=student_profile.program
     ).distinct()
     
-    first_year_subjects = major_subjects.filter(year_level=1)
-    second_year_subjects = major_subjects.filter(year_level=2)
-    third_year_subjects = major_subjects.filter(year_level=3)
-    fourth_year_subjects = major_subjects.filter(year_level=4)
+    first_year_subjects = major_subjects.filter(year_level=1).order_by('code')
+    second_year_subjects = major_subjects.filter(year_level=2).order_by('code')
+    third_year_subjects = major_subjects.filter(year_level=3).order_by('code')
+    fourth_year_subjects = major_subjects.filter(year_level=4).order_by('code')
 
     minor_subjects = Subject.objects.filter(
         approved=True,
@@ -92,12 +89,12 @@ def subject_checklist(request, student_id):
         
         checklist_item = get_object_or_404(
             StudentSubjectChecklist,
-            student=student,
+            student=student_profile,
             subject_id=subject_id
         )
         checklist_item.taken = taken
         checklist_item.save()
-        return redirect('subject_checklist')  
+        return redirect('student-subject-checklist', student_id)
     
     context = {
         'first_year_checklist': first_year_checklist,
@@ -108,3 +105,4 @@ def subject_checklist(request, student_id):
         'student_profile': student_profile,
     }
     return render(request, "studentSubjectChecklist/student_subject_checklist.html", context)
+

@@ -1,6 +1,6 @@
 $(document).ready(function() {
-    // ==================== fourthYear DataTable ====================
-    const $fourthYearDataTable = $('#fourthYearDataTable').DataTable({
+    // ==================== thirdYearCheckList DataTable ====================
+    const $thirdYearCheckListDataTable = $('#thirdYearCheckListDataTable').DataTable({
         order: [6, 'asc'],
         layout: {
             topStart: null,
@@ -14,21 +14,21 @@ $(document).ready(function() {
         }
     });
 
-    const $fourthYearEntries = $('#fourthYearCustomEntries');
-    const $fourthYearSearch = $('#fourthYearSearchBar');
-    const $fourthYearPagination = $('#fourthYearCustomPagination');
+    const $thirdYearCheckListEntries = $('#thirdYearCheckListCustomEntries');
+    const $thirdYearCheckListSearch = $('#thirdYearCheckListSearchBar');
+    const $thirdYearCheckListPagination = $('#thirdYearCheckListCustomPagination');
 
-    $fourthYearEntries.on('change', function() {
-        $fourthYearDataTable.page.len(parseInt(this.value, 10)).draw();
+    $thirdYearCheckListEntries.on('change', function() {
+        $thirdYearCheckListDataTable.page.len(parseInt(this.value, 10)).draw();
     });
 
-    $fourthYearSearch.on('keyup', function() {
-        $fourthYearDataTable.search(this.value).draw();
+    $thirdYearCheckListSearch.on('keyup', function() {
+        $thirdYearCheckListDataTable.search(this.value).draw();
     });
 
     // Pagination Function
-    function updatefourthYearPagination() {
-        const info = $fourthYearDataTable.page.info();
+    function updatethirdYearCheckListPagination() {
+        const info = $thirdYearCheckListDataTable.page.info();
         let paginationHtml = '<ul class="pagination justify-content-start ms-2">';
         
         // Previous Button
@@ -53,16 +53,16 @@ $(document).ready(function() {
             </li>`;
         }
         
-        $fourthYearPagination.html(paginationHtml + '</ul>');
+        $thirdYearCheckListPagination.html(paginationHtml + '</ul>');
     }
 
     // Stock Pagination Events
-    $fourthYearDataTable.on('draw', updatefourthYearPagination);
-    $fourthYearPagination.on('click', 'a.page-link', function(e) {
+    $thirdYearCheckListDataTable.on('draw', updatethirdYearCheckListPagination);
+    $thirdYearCheckListPagination.on('click', 'a.page-link', function(e) {
         e.preventDefault();
-        $fourthYearDataTable.page(parseInt($(this).data('page'), 10)).draw('page');
+        $thirdYearCheckListDataTable.page(parseInt($(this).data('page'), 10)).draw('page');
     });
-    updatefourthYearPagination();
+    updatethirdYearCheckListPagination();
 
 
 });

@@ -1,7 +1,7 @@
 $(document).ready(function() {
-    // ==================== thirdYear DataTable ====================
-    const $thirdYearDataTable = $('#thirdYearDataTable').DataTable({
-        order: [6, 'asc'],
+    // ==================== minorSubCheckList DataTable ====================
+    const $minorSubCheckListDataTable = $('#minorSubCheckListDataTable').DataTable({
+        order: [0, 'asc'],
         layout: {
             topStart: null,
             topEnd: null,
@@ -14,21 +14,21 @@ $(document).ready(function() {
         }
     });
 
-    const $thirdYearEntries = $('#thirdYearCustomEntries');
-    const $thirdYearSearch = $('#thirdYearSearchBar');
-    const $thirdYearPagination = $('#thirdYearCustomPagination');
+    const $minorSubCheckListEntries = $('#minorSubCheckListCustomEntries');
+    const $minorSubCheckListSearch = $('#minorSubCheckListSearchBar');
+    const $minorSubCheckListPagination = $('#minorSubCheckListCustomPagination');
 
-    $thirdYearEntries.on('change', function() {
-        $thirdYearDataTable.page.len(parseInt(this.value, 10)).draw();
+    $minorSubCheckListEntries.on('change', function() {
+        $minorSubCheckListDataTable.page.len(parseInt(this.value, 10)).draw();
     });
 
-    $thirdYearSearch.on('keyup', function() {
-        $thirdYearDataTable.search(this.value).draw();
+    $minorSubCheckListSearch.on('keyup', function() {
+        $minorSubCheckListDataTable.search(this.value).draw();
     });
 
     // Pagination Function
-    function updatethirdYearPagination() {
-        const info = $thirdYearDataTable.page.info();
+    function updateminorSubCheckListPagination() {
+        const info = $minorSubCheckListDataTable.page.info();
         let paginationHtml = '<ul class="pagination justify-content-start ms-2">';
         
         // Previous Button
@@ -53,16 +53,16 @@ $(document).ready(function() {
             </li>`;
         }
         
-        $thirdYearPagination.html(paginationHtml + '</ul>');
+        $minorSubCheckListPagination.html(paginationHtml + '</ul>');
     }
 
     // Stock Pagination Events
-    $thirdYearDataTable.on('draw', updatethirdYearPagination);
-    $thirdYearPagination.on('click', 'a.page-link', function(e) {
+    $minorSubCheckListDataTable.on('draw', updateminorSubCheckListPagination);
+    $minorSubCheckListPagination.on('click', 'a.page-link', function(e) {
         e.preventDefault();
-        $thirdYearDataTable.page(parseInt($(this).data('page'), 10)).draw('page');
+        $minorSubCheckListDataTable.page(parseInt($(this).data('page'), 10)).draw('page');
     });
-    updatethirdYearPagination();
+    updateminorSubCheckListPagination();
 
 
 });

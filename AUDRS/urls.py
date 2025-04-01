@@ -16,7 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
 from accounts import views as account_view
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -24,6 +26,10 @@ urlpatterns = [
     path('accounts/', include('accounts.urls')),
     path('student-subject-checklist/', include('studentSubjectCheckList.urls')),
     path('subjects/', include('subjects.urls')),
+    path('registration/', include('studentRegistration.urls')),
     path('login/', account_view.custom_login, name="login"),
     path('logout/', account_view.custom_logout, name="logout"),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

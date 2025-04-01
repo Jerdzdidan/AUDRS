@@ -1,0 +1,100 @@
+{% extends "home/layout.html" %}
+{% load static %}
+
+{% block style %}
+  <link rel="stylesheet" href="{% static 'studentRegistration/main.css' %}">
+  <style>
+    .registration-container {
+        max-width: 500px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+    }
+    .registration-header {
+        font-size: 1.8rem;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 20px;
+        color: #007bff;
+    }
+  </style>
+{% endblock style %}
+
+{% block body %}
+<div class="container">
+  <article class="content-section shadow-lg p-0">
+    <div class="container py-5">
+      <div class="registration-container">
+        <div class="registration-header">Open Student Registration</div>
+        <form method="post">
+          {% csrf_token %}
+          
+          <!-- Start Date Field -->
+          <div class="mb-3">
+            <label for="start_date" class="form-label">Start Date</label>
+            <input type="text" id="start_date" name="start_date" class="form-control" placeholder="e.g., Mar. 30, 2025" value="{% if initial_start_date %}{{ initial_start_date }}{% endif %}">
+          </div>
+
+          <!-- Start Time Field -->
+          <div class="mb-3">
+            <label for="start_time" class="form-label">Start Time</label>
+            <input type="text" id="start_time" name="start_time" class="form-control" placeholder="e.g., 12:00:00am" value="{% if initial_start_time %}{{ initial_start_time }}{% endif %}">
+          </div>
+
+          <!-- End Date Field -->
+          <div class="mb-3">
+            <label for="end_date" class="form-label">End Date</label>
+            <input type="text" id="end_date" name="end_date" class="form-control" placeholder="e.g., Apr. 05, 2025" value="{% if initial_end_date %}{{ initial_end_date }}{% endif %}">
+          </div>
+
+          <!-- End Time Field -->
+          <div class="mb-3">
+            <label for="end_time" class="form-label">End Time</label>
+            <input type="text" id="end_time" name="end_time" class="form-control" placeholder="e.g., 05:00:00pm" value="{% if initial_end_time %}{{ initial_end_time }}{% endif %}">
+          </div>
+
+          <div class="d-flex justify-content-center">
+            <button type="submit" class="btn btn-primary btn-lg">Set Registration Window</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </article>
+</div>
+{% endblock body %}
+
+{% block script %}
+  <script>
+    flatpickr("#start_date", {
+      dateFormat: "M. d, Y",
+      altInput: true,
+      altFormat: "M. d, Y"
+    });
+    
+    flatpickr("#start_time", {
+      enableTime: true,
+      noCalendar: true,
+      time_24hr: false,
+      dateFormat: "h:iK",
+      altInput: true,
+      altFormat: "h:iK"
+    });
+    
+    flatpickr("#end_date", {
+      dateFormat: "M. d, Y",
+      altInput: true,
+      altFormat: "M. d, Y"
+    });
+    
+    flatpickr("#end_time", {
+      enableTime: true,
+      noCalendar: true,
+      time_24hr: false,
+      dateFormat: "h:iK",
+      altInput: true,
+      altFormat: "h:iK"
+    });
+  </script>
+{% endblock script %}
