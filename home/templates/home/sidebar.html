@@ -112,6 +112,47 @@
             </div>
         </ul>
         {% endif %}
+        {% if request.user.role in "[OFFICER,ADMIN]" %}
+        <ul class="list-group my-1">
+            <a class="nav-link rounded accounts-nav-toggle {% if '/accounts/' in request.path %}active{% endif %}" href="#" id="accountsToggle">
+            <li class="list-group-item d-flex align-items-center menu-item">
+                <i class="ri-account-box-2-fill me-1 menu-icons"></i>
+                <span>Accounts-Management</span>
+                <i class="ri-arrow-down-s-line ms-auto"></i>
+            </li>
+            </a>
+            <div class="collapse {% if '/accounts/' in request.path %}show{% endif %}" id="accountsDropdown">
+                <a href="{% url "student-list" %}" class="nav-link rounded accounts-nav-item {% if '/student-list/' in request.path %}active{% endif %}">
+                    <li class="list-group-item d-flex align-items-center menu-item">
+                    <i class="fa-solid fa-user-graduate me-1 menu-icons"></i>
+                        Student Accounts
+                    </li>
+                </a>
+                {% if request.user.role in "[SUPERUSER,ADMIN]" %}
+                <a href="{% url "officer-list" %}" class="nav-link rounded accounts-nav-item {% if '/officer-list/' in request.path %}active{% endif %}">
+                    <li class="list-group-item d-flex align-items-center menu-item">
+                        <i class="ri-graduation-cap-fill me-1 menu-icons"></i>
+                        Officer Accounts
+                    </li>
+                </a>
+                {% endif %}
+                {% if request.user.role in "[ADMIN]" %}
+                    <a href="{% url "admin-list" %}" class="nav-link rounded accounts-nav-item {% if '/admin-list/' in request.path %}active{% endif %}">
+                        <li class="list-group-item d-flex align-items-center menu-item">
+                            <i class="ri-user-star-fill me-1 menu-icons"></i>
+                            Admin Accounts
+                        </li>
+                    </a>
+                {% endif %}
+                <a href="{% url "create-user" %}" class="nav-link rounded accounts-nav-item {% if '/create-user/' in request.path %}active{% endif %}">
+                    <li class="list-group-item d-flex align-items-center menu-item">
+                        <i class="ri-user-add-fill me-1 menu-icons"></i>
+                        Create Account
+                    </li>
+                </a>
+            </div>
+        </ul>
+        {% endif %}
         
         <ul class="list-group my-1">
             {% url "account-update" request.user.id as update_url %}
