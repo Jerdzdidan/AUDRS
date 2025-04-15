@@ -4,6 +4,10 @@ from accounts.decorators import role_required
 from accounts.models import Department, Program, EnrollmentOfficerProfile
 from .models import Subject
 from django.contrib import messages
+from systemLogs.models import Logs
+from datetime import datetime
+
+now = datetime.now()
 
 @login_required
 @role_required(allowed_roles=['OFFICER', 'ADMIN'])
@@ -196,6 +200,17 @@ def update_subject(request, subject_id):
             subject.prerequisites.set(prereq_ids)
         
         subject.save()
+
+        formatted_date = now.strftime("%b. %d, %Y")
+        formatted_time = now.strftime("%I:%M%p")
+        Logs.objects.create(
+            datelog=datetime.strptime(formatted_date, "%b. %d, %Y").date(),
+            timelog=datetime.strptime(formatted_time, "%I:%M%p").time(),
+            module="Subject Management",
+            action="Update Subject",
+            performed_to=f"subject: {subject.code} - {subject.name}",
+            performed_by= f"username: {request.user.username} - {request.user.last_name}, {request.user.first_name}"
+        )
         
         messages.success(request, f"Subject {subject.code} updated successfully.")
         return redirect('subject-management-list')
@@ -218,6 +233,18 @@ def update_subject(request, subject_id):
 @role_required(allowed_roles=['ADMIN'])
 def delete_subject(request, subject_id):
     subject = get_object_or_404(Subject, id=subject_id)
+
+    formatted_date = now.strftime("%b. %d, %Y")
+    formatted_time = now.strftime("%I:%M%p")
+    Logs.objects.create(
+        datelog=datetime.strptime(formatted_date, "%b. %d, %Y").date(),
+        timelog=datetime.strptime(formatted_time, "%I:%M%p").time(),
+        module="Subject Management",
+        action="Delete Subject",
+        performed_to=f"subject: {subject.code} - {subject.name}",
+        performed_by= f"username: {request.user.username} - {request.user.last_name}, {request.user.first_name}"
+    )
+
     subject.delete()
     messages.success(request, "Subject deleted successfully.")
     return redirect('subject-management-list')

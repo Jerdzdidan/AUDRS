@@ -44,6 +44,87 @@
 {% endblock body %}
 
 {% block script %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const dropzone = document.getElementById('dropzone');
+  const fileInput = document.getElementById('registration_form_image');
+  const feedback = document.createElement('div');
+  feedback.className = 'mt-2 small';
+  dropzone.appendChild(feedback);
 
-<script> document.addEventListener('DOMContentLoaded', function() { const dropzone = document.getElementById('dropzone'); const fileInput = document.getElementById('registration_form_image'); const feedback = document.createElement('div'); feedback.className = 'mt-2 small'; dropzone.appendChild(feedback); ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => { dropzone.addEventListener(eventName, preventDefaults, false); document.body.addEventListener(eventName, preventDefaults, false); });  ['dragenter', 'dragover'].forEach(eventName => { dropzone.addEventListener(eventName, highlight, false); }); ['dragleave', 'drop'].forEach(eventName => { dropzone.addEventListener(eventName, unhighlight, false); }); dropzone.addEventListener('drop', handleDrop, false); addEventListener('click', () => fileInput.click());  fileInput.addEventListener('change', handleFileSelect); function preventDefaults (e) { e.preventDefault(); e.stopPropagation(); } function highlight(e) { dropzone.classList.add('dragover'); } function unhighlight(e) { dropzone.classList.remove('dragover'); } function handleDrop(e) { const dt = e.dataTransfer; const files = dt.files; handleFiles(files); } function handleFileSelect() { const files = this.files; handleFiles(files); } function handleFiles(files) { if (files.length > 0) { const file = files[0]; if (file.type.startsWith('image/')) { if (fileInput.files !== files) { const dataTransfer = new DataTransfer(); dataTransfer.items.add(file); fileInput.files = dataTransfer.files; } feedback.textContent = `Selected file: ${file.name}`; feedback.style.color = 'green'; } else { feedback.textContent = 'Please upload an image file (e.g., JPEG, PNG).'; feedback.style.color = 'red'; fileInput.value = ''; } } } }); </script>
+  // Prevent default drag behaviors
+  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    dropzone.addEventListener(eventName, preventDefaults, false);
+    document.body.addEventListener(eventName, preventDefaults, false);
+  });
+
+  // Highlight/unhighlight dropzone
+  dropzone.addEventListener('dragenter', highlight);
+  dropzone.addEventListener('dragover', highlight);
+  dropzone.addEventListener('dragleave', unhighlight);
+  dropzone.addEventListener('drop', unhighlight);
+
+  // Handle file operations
+  dropzone.addEventListener('drop', handleDrop);
+  dropzone.addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', handleFileSelect);
+  
+  // Handle paste events
+  document.addEventListener('paste', handlePaste);
+
+  function preventDefaults(e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
+  function highlight() {
+    dropzone.classList.add('dragover');
+  }
+
+  function unhighlight() {
+    dropzone.classList.remove('dragover');
+  }
+
+  function handleDrop(e) {
+    const files = e.dataTransfer.files;
+    handleFiles(files);
+  }
+
+  function handleFileSelect() {
+    handleFiles(this.files);
+  }
+
+  function handlePaste(e) {
+    const items = e.clipboardData?.items;
+    if (items) {
+      for (const item of items) {
+        if (item.type.startsWith('image/')) {
+          const blob = item.getAsFile();
+          const file = new File([blob], 'pasted-image.png', { type: blob.type });
+          handleFiles([file]);
+          e.preventDefault();
+          break;
+        }
+      }
+    }
+  }
+
+  function handleFiles(files) {
+    if (!files.length) return;
+    
+    const file = files[0];
+    if (file.type.startsWith('image/')) {
+      const dataTransfer = new DataTransfer();
+      dataTransfer.items.add(file);
+      fileInput.files = dataTransfer.files;
+      feedback.textContent = `Selected file: ${file.name}`;
+      feedback.style.color = 'green';
+    } else {
+      feedback.textContent = 'Please upload an image file (JPEG, PNG, etc.)';
+      feedback.style.color = 'red';
+      fileInput.value = '';
+    }
+  }
+});
+</script>
 {% endblock script %}

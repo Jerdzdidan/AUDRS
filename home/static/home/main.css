@@ -232,6 +232,9 @@ input[type="submit"] {
 
 
 /* === SCROLLBAR STYLES === */
+.sidebar ::-webkit-scrollbar {
+  width: 6px; 
+}
 ::-webkit-scrollbar {
   width: 10px; 
 }

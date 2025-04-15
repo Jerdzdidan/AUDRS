@@ -8,6 +8,11 @@ from .models import RegistrationWindow, StudentRegistration
 from subjects.models import Subject
 from studentSubjectCheckList.models import StudentSubjectChecklist
 from datetime import time as time_
+from systemLogs.models import Logs
+from datetime import datetime
+from django.http import FileResponse
+
+now = datetime.now()
 
 @login_required
 @role_required(allowed_roles=['ADMIN'])
@@ -55,6 +60,18 @@ def open_registration_custom(request):
                 end_time=end_time,
                 is_open=True
             )
+
+        formatted_date = now.strftime("%b. %d, %Y")
+        formatted_time = now.strftime("%I:%M%p")
+        Logs.objects.create(
+            datelog=datetime.strptime(formatted_date, "%b. %d, %Y").date(),
+            timelog=datetime.strptime(formatted_time, "%I:%M%p").time(),
+            module="Student Registration",
+            action="Open Registration Window",
+            performed_to=f"Registration Window",
+            performed_by= f"username: {request.user.username} - {request.user.last_name}, {request.user.first_name}"
+        )
+
         messages.success(request, "Registration window set successfully and is now open.")
         return redirect('registration_calendar')
     
@@ -66,6 +83,7 @@ def open_registration_custom(request):
         context["initial_end_time"] = window.end_time.strftime("%I:%M%p")
         context["window"] = window
     return render(request, "studentRegistration/open_registration_custom.html", context)
+
 
 @login_required
 @role_required(allowed_roles=['ADMIN', 'OFFICER'])
@@ -476,6 +494,17 @@ def student_registration_edit(request):
         registration.completed = False
         registration.registration_date = timezone.now()
         registration.save()
+        
+        formatted_date = now.strftime("%b. %d, %Y")
+        formatted_time = now.strftime("%I:%M%p")
+        Logs.objects.create(
+            datelog=datetime.strptime(formatted_date, "%b. %d, %Y").date(),
+            timelog=datetime.strptime(formatted_time, "%I:%M%p").time(),
+            module="Student Registration",
+            action="Edit Registration Form",
+            performed_to=f"student: {student_profile.student_id} - {student_profile.user.username}",
+            performed_by= f"username: {request.user.username} - {request.user.last_name}, {request.user.first_name}"
+        )
 
         messages.success(request, "Registration updated successfully!")
         return redirect('student_registration_detail_for_student', student_profile.student_id)
@@ -608,6 +637,18 @@ def student_registration_detail(request, student_id):
         )
         checklist_item.taken = taken
         checklist_item.save()
+
+        formatted_date = now.strftime("%b. %d, %Y")
+        formatted_time = now.strftime("%I:%M%p")
+        Logs.objects.create(
+            datelog=datetime.strptime(formatted_date, "%b. %d, %Y").date(),
+            timelog=datetime.strptime(formatted_time, "%I:%M%p").time(),
+            module="Student Registration - Subject Checklist",
+            action="Check Subject",
+            performed_to=f"student: {student_id} - subject: {checklist_item.subject.code} - {checklist_item.subject.name}",
+            performed_by=f"username: {request.user.username} - {request.user.last_name}, {request.user.first_name}"
+        )
+
         messages.success(request, "Subject status updated.")
         return redirect('student_registration_detail', student_id=student_id)
     
@@ -645,14 +686,27 @@ def finalize_registration(request, student_id):
             messages.warning(request, "Please upload an image file.")
             return render(request, "studentRegistration/finalize_registration.html", {"registration": registration, "student_profile": student_profile})
         
-        valid_types = ['image/jpeg', 'image/png', 'image/gif']
+        valid_types = ['image/jpeg', 'image/png', 'image/gif', 'image/jpg', 'image/jfif']
         if uploaded_file.content_type not in valid_types:
             messages.warning(request, "Only image files (JPEG, PNG, GIF) are allowed.")
             return render(request, "studentRegistration/finalize_registration.html", {"registration": registration, "student_profile": student_profile})
         
         registration.registration_form_image = uploaded_file
+        registration.completed_at = timezone.now()
         registration.completed = True
         registration.save()
+
+        formatted_date = now.strftime("%b. %d, %Y")
+        formatted_time = now.strftime("%I:%M%p")
+        Logs.objects.create(
+            datelog=datetime.strptime(formatted_date, "%b. %d, %Y").date(),
+            timelog=datetime.strptime(formatted_time, "%I:%M%p").time(),
+            module="Student Registration",
+            action="Complete Registration",
+            performed_to=f"student: {student_profile.student_id} - {student_profile.user.first_name} {student_profile.user.last_name}",
+            performed_by= f"username: {request.user.username} - {request.user.last_name}, {request.user.first_name}"
+        )
+
         messages.success(request, "Registration finalized successfully!")
         return redirect('student_registration_queue')
     
@@ -663,3 +717,7 @@ def finalize_registration(request, student_id):
     return render(request, "studentRegistration/finalize_registration.html", context)
 
 
+def download_registration_image(request, registration_id):
+    registration = get_object_or_404(StudentRegistration, id=registration_id)
+    image_path = registration.registration_form_image.path
+    return FileResponse(open(image_path, 'rb'), as_attachment=True)

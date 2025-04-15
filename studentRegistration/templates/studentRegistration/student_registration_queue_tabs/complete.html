@@ -31,9 +31,6 @@
           <th>Department</th>
           {% endif %}
           <th>Program</th>
-          <th>Class Time</th>
-          <th>Section</th>
-          <th>Minor Subjects</th>
           <th>Submitted On</th>
           <th>Processed On</th>
         </tr>
@@ -47,11 +44,8 @@
           <td>{{ reg.student.department.name }}</td>
           {% endif %}
           <td>{{ reg.student.program.name }}</td>
-          <td>{{ reg.preferred_class_time }}</td>
-          <td>{{ reg.preferred_section }}</td>
-          <td>{{ reg.minor_subjects_chosen }}</td>
           <td>{{ reg.registration_date|date:"M. d, Y - H:i A" }}</td>
-          <td>{{ reg.processed_date|date:"M. d, Y - H:i A" }}</td>
+          <td>{{ reg.completed_at|date:"M. d, Y - H:i A" }}</td>
         </tr>
         {% endfor %}
       </tbody>

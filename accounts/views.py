@@ -7,6 +7,10 @@ from django.contrib import messages
 from .models import Department, Program
 from .decorators import role_required
 from django.core.exceptions import ObjectDoesNotExist
+from systemLogs.models import Logs
+from datetime import datetime
+
+now = datetime.now()
 
 def custom_login(request):
     if request.method == 'POST':
@@ -230,6 +234,17 @@ def update_user(request, user_id):
             if department_id := request.POST.get('department'):
                 profile.department = get_object_or_404(Department, id=department_id)
                 profile.save()
+        
+        formatted_date = now.strftime("%b. %d, %Y")
+        formatted_time = now.strftime("%I:%M%p")
+        Logs.objects.create(
+            datelog=datetime.strptime(formatted_date, "%b. %d, %Y").date(),
+            timelog=datetime.strptime(formatted_time, "%I:%M%p").time(),
+            module="Accounts Management",
+            action="Update User",
+            performed_to=f"user: {user_obj.username} - {user_obj.last_name}, {user_obj.first_name}",
+            performed_by= f"username: {request.user.username} - {request.user.last_name}, {request.user.first_name}"
+        )
 
         messages.success(request, "Account updated successfully")
         if user_obj == request.user:
@@ -275,6 +290,17 @@ def delete_user(request, user_id):
     except CustomUser.DoesNotExist:
         messages.warning(request, "User not found")
         return redirect(request.META.get('HTTP_REFERER', 'student-list'))
+    
+    formatted_date = now.strftime("%b. %d, %Y")
+    formatted_time = now.strftime("%I:%M%p")
+    Logs.objects.create(
+        datelog=datetime.strptime(formatted_date, "%b. %d, %Y").date(),
+        timelog=datetime.strptime(formatted_time, "%I:%M%p").time(),
+        module="Accounts Management",
+        action="Delete User",
+        performed_to=f"user: {user_obj.username} - {user_obj.last_name}, {user_obj.first_name}",
+        performed_by= f"username: {request.user.username} - {request.user.last_name}, {request.user.first_name}"
+    )
     
     user_obj.delete()
     messages.success(request, "User deleted successfully")

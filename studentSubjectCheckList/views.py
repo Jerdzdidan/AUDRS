@@ -5,6 +5,10 @@ from .models import StudentSubjectChecklist
 from accounts.decorators import role_required
 from accounts.models import StudentProfile, EnrollmentOfficerProfile, Department, Program
 from django.contrib import messages
+from systemLogs.models import Logs
+from datetime import datetime
+
+now = datetime.now()
 
 @login_required
 def student_list_for_checklist(request):
@@ -94,6 +98,17 @@ def subject_checklist(request, student_id):
         )
         checklist_item.taken = taken
         checklist_item.save()
+
+        formatted_date = now.strftime("%b. %d, %Y")
+        formatted_time = now.strftime("%I:%M%p")
+        Logs.objects.create(
+            datelog=datetime.strptime(formatted_date, "%b. %d, %Y").date(),
+            timelog=datetime.strptime(formatted_time, "%I:%M%p").time(),
+            module="Student-Subject Checklist",
+            action="Check Subject",
+            performed_to=f"student: {student_id} - subject: {checklist_item.subject.code} - {checklist_item.subject.name}",
+            performed_by=f"username: {request.user.username} - {request.user.last_name}, {request.user.first_name}"
+        )
         return redirect('student-subject-checklist', student_id)
     
     context = {

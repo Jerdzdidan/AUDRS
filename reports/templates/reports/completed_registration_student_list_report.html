@@ -1,0 +1,228 @@
+{% extends "home/layout.html" %}
+{% load static %}
+
+{% block style %}
+
+{% endblock style %}
+
+{% block body %}
+<h3 class="mb-3">Reports - <span class="text-primary">Completed Registration Student List</span></h3>
+<article class="content-section border rounded p-0 shadow-sm">
+    <div class="container">
+         <!-- Filter Section -->
+         <div class="row mt-2">
+            <!-- Filter Section -->
+            <form method="get" class="row mt-2">
+                {% if request.user.role|lower == "admin" or request.user.is_superuser %}
+                
+                <div class="col-auto">
+                    <label for="departmentFilter" class="fw-bold">Department:</label>
+                    <select id="departmentFilter" name="department" class="form-select w-auto" onchange="this.form.submit()">
+                        <option value="">All Departments</option>
+                        {% for dept in departments %}
+                            <option value="{{ dept.id }}" {% if selected_department == dept.id|stringformat:"s" %}selected{% endif %}>
+                                {{ dept.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <label for="programFilter" class="fw-bold">Program:</label>
+                    <select id="programFilter" name="program" class="form-select w-auto" onchange="this.form.submit()">
+                        <option value="">All Programs</option>
+                        {% for prog in programs %}
+                            <option value="{{ prog.id }}" {% if selected_program == prog.id|stringformat:"s" %}selected{% endif %}>
+                                {{ prog.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                {% else %}
+                <div class="row mt-2">
+                <div class="col-auto">
+                    <label for="programFilter" class="fw-bold">Filter by Program:</label>
+                    <select id="programFilter" name="program" class="form-select d-inline w-auto" onchange="this.form.submit()">
+                        <option value="">All Programs</option>
+                        {% for prog in programs %}
+                            <option value="{{ prog.id }}" {% if selected_program == prog.id|stringformat:"s" %}selected{% endif %}>
+                                {{ prog.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                </div>
+                {% endif %}
+            </form>
+            <div class="col-md-auto ms-sm-auto"> 
+                <div class="d-flex gap-2 mt-3 mt-sm-0"> 
+                    <button class="btn btn-outline-primary btn-block px-4" onclick="printTable()">
+                        <i class="ri-printer-line"></i>
+                    </button>
+                </div>           
+            </div>
+        </div>
+        <!-- Top Controls -->
+        <div class="row mt-2">
+            <div class="col-auto">
+                <select id="customEntries" class="form-select d-inline w-auto border-secondary fw-bold" 
+                        style="font-size: calc(0.8rem + 0.2vw); cursor: pointer; vertical-align: middle;">
+                    <option value="10">10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
+                <span class="d-inline ms-2" 
+                      style="font-size: calc(0.8rem + 0.2vw); vertical-align: middle;">Entries per page</span>
+            </div>
+            <div class="col-auto ms-auto">
+                <input type="text" id="searchBar" class="form-control d-inline w-auto border-secondary" 
+                       placeholder="Search..." 
+                       style="font-size: calc(0.8rem + 0.2vw); vertical-align: middle;">
+            </div>
+        </div>
+       
+    </div>
+    <!-- Student Table -->
+    <div class="table-responsive table-nowrap mt-2">
+        <table id="dataTable" class="table table-light table-hover table-striped text-center m-0 projectTables">
+            <thead class="table-dark">
+                <tr>
+                    <th class="text-center">Student Number</th>
+                    <th class="text-center">Name</th>
+                    <th class="text-center">Year Level</th>
+                    {% if request.user.role|lower == "admin" or request.user.is_superuser %}
+                    <th class="text-center">Department</th>
+                    {% endif %}
+                    <th class="text-center">Program Taken</th>
+                    <th class="text-center">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                    <tr>
+                        <td class="text-center align-middle">{{ student.student_id }}</td>
+                        <td class="align-middle">{{ student.user.last_name }}, {{ student.user.first_name }}</td>
+                        <td class="text-center align-middle">{{ student.year_level }} </td>
+                        {% if request.user.role|lower == "admin" or request.user.is_superuser %}
+                        <td class="align-middle">{% if student.department %}{{ student.department.name }}{% else %}-{% endif %}</td>
+                        {% endif %}
+                        <td class="align-middle">{% if student.program %}{{ student.program.name }}{% else %}-{% endif %}</td>
+                        <td><span class="badge p-2 fw-bold bg-success">COMPLETED</span></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div id="customPagination"></div>
+    </div>
+</article>
+{% endblock body %}
+
+{% block script %}
+<script>
+    $('#programFilter').select2();
+    $('#departmentFilter').select2();
+
+
+    $('#myModal').on('show.bs.modal', function(event) {
+        var button = $(event.relatedTarget);
+        var deleteData = button.attr('data-deleteData');
+        var dataID = button.attr('data-ID');
+        var moduleName = button.attr('data-moduleName');
+        
+        var txtDeleteData = deleteData;
+        $(this).find('#deleteMessage').text('Are you sure you want to ' + moduleName + ' for:');
+        $(this).find('#txtDeleteData').text(txtDeleteData);
+        $(this).find('#btnDelete').attr('href', '{% url "account-delete-confirm" 0 %}'.replace('0', dataID));
+    });
+    function printTable() {
+        const pw = window.open('', '', 'height=600,width=1000');
+        const tbl = document.getElementById('dataTable');
+        
+        // Get current filter values
+        const deptSelect = document.querySelector('[name="department"]');
+        const progSelect = document.querySelector('[name="program"]');
+        const deptName = deptSelect ? deptSelect.options[deptSelect.selectedIndex].text : 'All Departments';
+        const progName = progSelect ? progSelect.options[progSelect.selectedIndex].text : 'All Programs';
+        
+        // Clone the table structure
+        const clonedTbl = tbl.cloneNode(true);
+        
+        // Remove DataTables classes and add print-specific classes
+        clonedTbl.classList.remove('projectTables');
+        clonedTbl.classList.add('table-sm', 'w-100', 'print-table');
+        
+        // Ensure all rows are visible
+        clonedTbl.querySelectorAll('tr').forEach(row => row.style.display = '');
+        
+        pw.document.write('<html><head><title>Print Table</title>');
+        pw.document.write('<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css">');
+        pw.document.write('<style>');
+        pw.document.write(`@media print {
+            .print-table thead th {
+                color: white !important;
+                background-color: #212529 !important;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+            .print-table {
+                width: 100% !important;
+                font-size: 10px !important;
+            }
+            .print-table th,
+            .print-table td {
+                padding: 4px !important;
+            }
+            @page {
+                size: auto;
+                margin: 10mm;
+            }
+        }`);
+        pw.document.write('</style></head><body>');
+        
+        const customContent = `
+        <div class="container">
+            <div class="mb-3">
+                <div class="text-left mt-2" style="font-size: 20px; font-weight: bold;">
+                    <img src="{% static "home/images/Arellano_University_New_Logo.png" %}" style="height: 80px;" alt="Logo">
+                    Arellano University<br>
+                </div>
+                <div class="text-left" style="font-size: 10px;">
+                    2600 Legarda St., Sampaloc, Manila<br>
+                    8-734-7371 to 79<br>
+                    info@arellano.edu.ph<br>
+                </div>
+                <hr class="my-2" style="border-top: 1px solid #000;">
+                <div class="text-center" style="font-size: 30px; margin: 13px 0;">
+                    <h5>COMPLETED REGISTRATION STUDENT LIST REPORT</h5>
+                </div>
+                <div class="text-left" style="font-size: 12px;">
+                    <p class="my-0"><strong>Generated Date:</strong> ${new Date().toLocaleDateString()}</p>
+                    <p class="my-0"><strong>Department:</strong> ${deptName}</p>
+                    <p class="my-0"><strong>Program:</strong> ${progName}</p>
+                </div>
+            </div>
+            <div class="table-responsive">
+                ${clonedTbl.outerHTML}
+            </div>
+            <div class="text-left mt-4"><small>Prepared by: _____________________________</small></div>
+            <div class="text-left mb-5" style="padding-left: 135px;"><small>Name</small></div>
+        </div>`;
+        
+        pw.document.write(customContent);
+        pw.document.write(`
+        <div style="position: fixed; bottom: -12px; left: 0; width: 100%; text-align: center; font-size: 12px; padding: 10px;">
+            <div style="background-color: white; height: auto;">
+                <hr class="my-0" style="border-top: 1px solid #000;">
+                Printed By: {{ request.user.username }}, ${new Date().toLocaleString('en-US', {month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' })}
+            </div>
+        </div>`);
+        pw.document.write('</body></html>');
+        pw.document.close();
+        
+        setTimeout(() => {
+            pw.print();
+        }, 500);
+    }
+</script>
+{% endblock script %}

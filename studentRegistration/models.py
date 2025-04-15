@@ -54,6 +54,13 @@ class StudentRegistration(models.Model):
         default=False,
         help_text="Indicates if the registration process is completed"
     )
+
+    completed_at = models.DateTimeField(
+        blank=True,
+        null=True,
+        help_text="Timestamp when the registration was completed"
+    )
+    
     
     registration_form_image = models.ImageField(
         upload_to='registration_forms/',

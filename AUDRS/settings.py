@@ -39,10 +39,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'home',
+    'dashboard',
     'accounts',
     'subjects',
     'studentSubjectCheckList',
     'studentRegistration',
+    'reports',
+    'systemLogs',
 ]
 
 MIDDLEWARE = [

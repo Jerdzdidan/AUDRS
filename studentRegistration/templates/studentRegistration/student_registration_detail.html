@@ -18,7 +18,7 @@
 <div class="container">
   <div class="d-flex justify-content-between border-bottom align-items-center">
     {% if request.user.role != "STUDENT" %}
-      <h3>Student Subject Checklist - <span class="text-primary">Student Number: {{ student_profile.student_id }}</span></h3>
+      <h3>Student Registration and CheckList - <span class="text-primary">Student Number: {{ student_profile.student_id }}</span></h3>
     {% else %}
       <h3>Subject - <span class="text-primary">CheckList</span></h3>
     {% endif %}
@@ -47,7 +47,7 @@
       </li>
     </ul>
     {% if request.user.role != "STUDENT" %}
-    <a href="{% url 'student-subject-studentlist' %}" class="btn btn-secondary close-tab ms-3">
+    <a href="{% url 'student_registration_queue' %}" class="btn btn-secondary close-tab ms-3">
       <i class="fa-solid fa-xmark fw-bold"></i>
     </a>
     {% endif %}
