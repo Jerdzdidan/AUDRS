@@ -43,8 +43,8 @@
 <article class="content-section border rounded p-0 shadow-sm">
   <div class="container">
     <!-- Filter Section -->
-    {% if request.user.role|lower == "admin" or request.user.is_superuser %}
     <form method="get" class="row mt-2">
+    {% if request.user.role|lower == "admin" or request.user.is_superuser %}
       <div class="col-auto">
           <label for="departmentFilter" class="fw-bold">Department:</label>
           <select id="departmentFilter" name="department" class="form-select w-auto" onchange="this.form.submit()">
@@ -67,7 +67,6 @@
               {% endfor %}
           </select>
       </div>
-    </form>
     {% else %}
     <div class="row mt-2">
       <div class="col-auto">
@@ -83,6 +82,7 @@
       </div>
     </div>
     {% endif %}
+    </form>
 
     <!-- Dashboard Metrics -->
     <div class="row mt-4">

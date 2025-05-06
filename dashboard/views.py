@@ -11,20 +11,22 @@ def dashboard(request):
     selected_department = request.GET.get('department', '')
     selected_program = request.GET.get('program', '')
     
-    # For Admins and superusers: filter students and registrations by department and program.
     if user_role == 'ADMIN' or request.user.is_superuser:
         students_qs = StudentProfile.objects.all()
         registrations_qs = StudentRegistration.objects.all()
         if selected_department:
             students_qs = students_qs.filter(department__id=selected_department)
             registrations_qs = registrations_qs.filter(student__department__id=selected_department)
-            # Filter programs to those in the chosen department.
             programs = Program.objects.filter(department__id=selected_department)
         else:
             programs = Program.objects.all()
+
+        if selected_program:
+            students_qs = students_qs.filter(program__id=selected_program)
+            registrations_qs = registrations_qs.filter(student__program__id=selected_program)
+
         departments = Department.objects.all()
         
-    # For Officers: only filter by program; department is determined from the officer's profile.
     elif user_role == 'OFFICER':
         dept = request.user.enrollmentofficerprofile.department
         students_qs = StudentProfile.objects.filter(department=dept)

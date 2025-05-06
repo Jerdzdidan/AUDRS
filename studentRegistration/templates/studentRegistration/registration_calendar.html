@@ -17,7 +17,7 @@
 <script>
   $(document).ready(function() {
     var calendarEl = $('#calendar')[0];
-    var initialDate = {% if window %}"{{ window.start_date|date:'Y-m-d' }}"{% else %}null{% endif %};
+    var initialDate = new Date().toISOString().slice(0,10);
     var eventsArray = [];
     {% if window %}
         eventsArray.push({
@@ -38,8 +38,8 @@
       eventColor: '#004EA8',
       eventTextColor: 'white',
       eventDidMount: function(info) {
-          info.el.style.cursor = 'pointer';
-          info.el.style.borderLeft = '4px solid #2980b9';
+        info.el.style.cursor = 'pointer';
+        info.el.style.borderLeft = '4px solid #2980b9';
       },
       eventTimeFormat: {
         hour: 'numeric',
